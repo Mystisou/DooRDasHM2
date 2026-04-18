@@ -1,5 +1,6 @@
 package game.engine.monsters;
 
+import game.engine.Constants;
 import game.engine.Role;
 
 public class MultiTasker extends Monster {
@@ -17,5 +18,21 @@ public class MultiTasker extends Monster {
 	public void setNormalSpeedTurns(int normalSpeedTurns) {
 		this.normalSpeedTurns = normalSpeedTurns;
 	}
+	
+	public void move(int distance) {
+        if (normalSpeedTurns == 0) 
+        	distance /= 2;
+        else 
+        	normalSpeedTurns--;
+        super.move(distance);
+    }
+
+	//Focus Mode: moves at normal speed for 2 turns
+    public void executePowerupEffect(Monster opponentMonster) {
+        if (getEnergy() >= Constants.POWERUP_COST) {
+            alterEnergy(-Constants.POWERUP_COST);
+            normalSpeedTurns = 2;
+        }
+    }
 
 }
