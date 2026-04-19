@@ -106,7 +106,7 @@ public abstract class Monster implements Comparable<Monster> {
 	}
 	
 	public final void alterEnergy(int energy) {
-		if (energy < 0 && shielded) {
+		if (shielded) {
 			shielded = false;
 			return;
 		}
