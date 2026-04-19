@@ -1,4 +1,5 @@
 package game.engine.cards;
+import game.engine.monsters.Monster;
 
 public abstract class Card {
 	private String name;
@@ -13,6 +14,8 @@ public abstract class Card {
 		this.rarity = rarity;
 		this.lucky = lucky;
 	}
+	
+	public abstract void performAction(Monster player, Monster opponent);
 	
 	public String getName() {
 		return name;
