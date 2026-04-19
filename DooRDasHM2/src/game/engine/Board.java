@@ -1,6 +1,7 @@
 package game.engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import game.engine.cards.Card;
 import game.engine.cells.Cell;
@@ -46,6 +47,19 @@ public class Board {
 	public void initializeBoard(ArrayList<Cell> specialCells) {
 		
 	}
+	
+	public static void reloadCards() {
+		cards = new ArrayList<>(originalCards);
+		Collections.shuffle(cards);
+	}
+	
+	public static Card drawCard() {
+		if(cards.isEmpty()) 
+			reloadCards();
+		
+		return cards.remove(0);
+	}
+	
 	private int[] indexToRowCol(int index) {
 		 return new int[2];
 	}

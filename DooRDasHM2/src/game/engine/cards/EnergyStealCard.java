@@ -21,10 +21,7 @@ public class EnergyStealCard extends Card implements CanisterModifier {
 		this.modifyCanisterEnergy(opponent, -amountToSteal);
 		int actualStolenAmount = OldEnergy - opponent.getEnergy();
 		this.modifyCanisterEnergy(player, actualStolenAmount);
-		
 	}
-	
-	
 	
 	public int getEnergy() {
 		return energy;
