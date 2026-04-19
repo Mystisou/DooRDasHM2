@@ -3,7 +3,8 @@ package game.engine;
 import java.util.ArrayList;
 
 import game.engine.cards.Card;
-import game.engine.cells.*;
+import game.engine.cells.Cell;
+import game.engine.exceptions.InvalidMoveException;
 import game.engine.monsters.Monster;
 
 public class Board {
@@ -45,7 +46,23 @@ public class Board {
 	public void initializeBoard(ArrayList<Cell> specialCells) {
 		
 	}
-	public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster){
+	private int[] indexToRowCol(int index) {
+		 return new int[2];
+	}
+	public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster) throws InvalidMoveException{
+		int landingPosition = currentMonster.getPosition() + roll ;
+		if(landingPosition == opponentMonster.getPosition())
+        	throw new InvalidMoveException();
+		else {
+		    int[] landingCoord = indexToRowCol(landingPosition);
+		    Cell landingCell = boardCells[landingCoord[0]][landingCoord[1]]; 
+		    currentMonster.move(roll);
+		    landingCell.onLand(currentMonster,opponentMonster);
+		    updateMonsterPositions(currentMonster,opponentMonster);
+	    }
+   }
+	private void updateMonsterPositions(Monster player, Monster opponent) {
 		
 	}
+	
 }

@@ -22,5 +22,9 @@ public class Cell {
 	public void setMonster(Monster monster) {
 		this.monster = monster;
 	}
-
+    
+	
+	public void onLand(Monster landingMonster, Monster opponentMonster) {
+		
+	}
 }
