@@ -86,10 +86,7 @@ public class Game {
 		        current.setFrozen(false);
 		    else {	    
 		        board.moveMonster(current, rollDice(),getCurrentOpponent());
-		        if(current.getConfusionTurns()>0)
-		        	current.setConfusionTurns(current.getConfusionTurns()-1);
-		            if(current.getConfusionTurns()==0)
-		            	current.setRole(current.getOriginalRole());
+		        current.decrementConfusion();
 		    }
 		    switchTurn();	
 	}
