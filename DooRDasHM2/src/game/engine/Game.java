@@ -72,8 +72,8 @@ public class Game {
 	}
 
 	public void usePowerup() throws OutOfEnergyException {
-		if (current.getEnergy() > Constants.POWERUP_COST) {
-			current.setEnergy(current.getEnergy()-Constants.POWERUP_COST);
+		if (current.getEnergy() >= Constants.POWERUP_COST) {
+			current.alterEnergy(-Constants.POWERUP_COST);
 			current.executePowerupEffect(opponent);
 		}
 		else
@@ -99,7 +99,7 @@ public class Game {
 	}
 	
 	private boolean checkWinCondition(Monster monster) {
-		return current.getEnergy()>=1000 && current.getPosition()==99;
+		return monster.getEnergy()>=1000 && monster.getPosition()==99;
 	}
 	
 	public Monster getWinner(){
