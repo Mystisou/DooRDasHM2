@@ -42,7 +42,10 @@ public class Board {
 	public static void setCards(ArrayList<Card> cards) {
 		Board.cards = cards;
 	}
-	void initializeBoard(ArrayList<Cell> specialCells) {
+	public void initializeBoard(ArrayList<Cell> specialCells) {
+		
+	}
+	public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster){
 		
 	}
 }
