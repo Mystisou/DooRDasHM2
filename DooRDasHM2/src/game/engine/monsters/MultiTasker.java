@@ -20,10 +20,11 @@ public class MultiTasker extends Monster {
 	}
 	
 	public void move(int distance) {
-        if (normalSpeedTurns == 0) 
+        if (getNormalSpeedTurns() == 0) 
         	distance /= 2;
         else 
-        	normalSpeedTurns--;
+        	setNormalSpeedTurns(getNormalSpeedTurns() - 1);
+        
         super.move(distance);
     }
 
@@ -31,7 +32,7 @@ public class MultiTasker extends Monster {
     public void executePowerupEffect(Monster opponentMonster) {
         if (getEnergy() >= Constants.POWERUP_COST) {
             alterEnergy(-Constants.POWERUP_COST);
-            normalSpeedTurns = 2;
+            setNormalSpeedTurns(2);
         }
     }
 

@@ -60,9 +60,6 @@ public abstract class Monster implements Comparable<Monster> {
 	}
 
 	public void setPosition(int position) {
-		if (position < 0)
-		    this.position = 0;
-		else
 		    this.position = position % Constants.BOARD_SIZE;
 	}
 	
@@ -102,28 +99,30 @@ public abstract class Monster implements Comparable<Monster> {
 	}
 	
 	public void move(int distance) {
-		setPosition(this.position + distance);
+		setPosition(getPosition() + distance);
 	}
 	
 	public final void alterEnergy(int energy) {
-		if (energy < 0 && shielded) 
-			shielded = false;
+		if (energy < 0 && isShielded()) 
+			setShielded(false);
+		
 		else {
-		  if(name=="DYNAMO")
-			energy *= 2 ;
-		  else if(name=="SCHEMER")
-			energy += 10 ;
-		  else if(name=="MULTITASKER")
-			energy += 200 ; 
+			if(this instanceof Dynamo)
+				energy *= 2 ;
+			else if(this instanceof Schemer)
+				energy += 10 ;
+			else if(this instanceof MultiTasker)
+				energy += 200 ; 
 		
           setEnergy(getEnergy() + energy);
 	   }
 	}
+	
 	public void decrementConfusion() {
 		if (confusionTurns > 0) {
 			this.confusionTurns --;
 			if (confusionTurns == 0)
-				this.role = this.originalRole;
+				setRole(getOriginalRole());
 		}
 	}
 

@@ -21,16 +21,21 @@ public class Dasher extends Monster {
 	
 	//Momentum Rush: moves at 3× speed (distance) for 3 turns instead of the usual 2×
     public void move(int distance) {
-        int speedMultipliedBy = (momentumTurns > 0) ? 3 : 2;
-        super.move(distance * speedMultipliedBy);
-        if (momentumTurns > 0) 
+        int speedMultipliedBy;
+        if (momentumTurns > 0) {
+        	speedMultipliedBy = 3;
         	momentumTurns--;
+        }
+        else	
+        	speedMultipliedBy = 2;
+        
+        super.move(distance * speedMultipliedBy);        	
     }
     
     public void executePowerupEffect(Monster opponentMonster) {
     	 if (getEnergy() >= Constants.POWERUP_COST) {
              alterEnergy(-Constants.POWERUP_COST);
-             momentumTurns = 3;
+             setMomentumTurns(3);
          }
     }
 

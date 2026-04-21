@@ -21,19 +21,19 @@ public class Schemer extends Monster {
 	//Chain Attack: steals energy from the opponent and all stationed monsters, 
 	//gaining a single total steal bonus at the end
 	public void executePowerupEffect(Monster opponentMonster) {
-		ArrayList<Monster> all = Board.getStationedMonsters();
 		if (getEnergy() >= Constants.POWERUP_COST) {
-            for(int i=0;i<all.size();i++)
-            	execute(all.get(i));
-            execute(opponentMonster);
-        }
+			alterEnergy(-Constants.POWERUP_COST);
+		
+			int totalStolenEnergy = 0;
+			
+			ArrayList<Monster> stationedMonsters = Board.getStationedMonsters();
+			for(int i = 0; i < stationedMonsters.size(); i++)
+	            	totalStolenEnergy += stealEnergyFrom(stationedMonsters.get(i));
+			
+			totalStolenEnergy += stealEnergyFrom(opponentMonster);
+			
+			alterEnergy(totalStolenEnergy);
+		}
 	}
-	private void execute(Monster opponent) {
-		alterEnergy(-Constants.POWERUP_COST);
-        
-        int totalStolenEnergy = 0;
-        totalStolenEnergy += stealEnergyFrom(opponent);
-        
-        alterEnergy(totalStolenEnergy);
-	}
+	
 }
