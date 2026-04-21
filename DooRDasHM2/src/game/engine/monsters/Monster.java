@@ -106,13 +106,19 @@ public abstract class Monster implements Comparable<Monster> {
 	}
 	
 	public final void alterEnergy(int energy) {
-		if (shielded) {
+		if (energy < 0 && shielded) 
 			shielded = false;
-			return;
-		}
-        this.energy = Math.max(Constants.MIN_ENERGY, this.energy + energy);
+		else {
+		  if(name=="DYNAMO")
+			energy *= 2 ;
+		  else if(name=="SCHEMER")
+			energy += 10 ;
+		  else if(name=="MULTITASKER")
+			energy += 200 ; 
+		
+          setEnergy(getEnergy() + energy);
+	   }
 	}
-	
 	public void decrementConfusion() {
 		if (confusionTurns > 0) {
 			this.confusionTurns --;
