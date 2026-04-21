@@ -19,7 +19,7 @@ public class Dasher extends Monster {
 		this.momentumTurns = momentumTurns;
 	}
 	
-	//Momentum Rush: moves at 3× speed (distance) for 3 turns instead of the usual 2×
+	//overrides move() to 3× speed instead of the usual 2×
     public void move(int distance) {
         int speedMultipliedBy;
         if (momentumTurns > 0) {
@@ -32,10 +32,12 @@ public class Dasher extends Monster {
         super.move(distance * speedMultipliedBy);        	
     }
     
+    //Momentum Rush: 
+    // sets how many turns to triple the speed to override move()
     public void executePowerupEffect(Monster opponentMonster) {
     	 if (getEnergy() >= Constants.POWERUP_COST) {
              alterEnergy(-Constants.POWERUP_COST);
-             setMomentumTurns(3);
+             momentumTurns = 3;
          }
     }
 
