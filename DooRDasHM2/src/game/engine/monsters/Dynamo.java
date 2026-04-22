@@ -12,7 +12,6 @@ public class Dynamo extends Monster {
 	 //Screech Freeze: 
 	 //Freezes the opponent for one turn. 
 	 public void executePowerupEffect(Monster opponentMonster) {
-			 alterEnergy(-Constants.POWERUP_COST);
 			 opponentMonster.setFrozen(true);
 	 }
 	

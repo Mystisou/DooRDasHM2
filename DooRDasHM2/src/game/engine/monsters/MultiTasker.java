@@ -32,7 +32,6 @@ public class MultiTasker extends Monster {
 	//Focus Mode: 
 	//sets moves at normal speed for 2 turns to override move()
     public void executePowerupEffect(Monster opponentMonster) {
-            alterEnergy(-Constants.POWERUP_COST);
             normalSpeedTurns = 2;
     }
 

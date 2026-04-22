@@ -14,16 +14,14 @@ public class Schemer extends Monster {
 	
 	private int stealEnergyFrom(Monster target) {
         int stolenEnergy = Math.min(Constants.SCHEMER_STEAL, target.getEnergy());
-        target.setEnergy(target.getEnergy() - stolenEnergy);
+        target.alterEnergy(-stolenEnergy);
         return stolenEnergy;
 	}
 
 	//Chain Attack: 
 	//steals energy from the opponent & all stationed monsters, 
 	//gains a single total steal bonus at the end
-	public void executePowerupEffect(Monster opponentMonster) {
-			alterEnergy(-Constants.POWERUP_COST);
-		
+	public void executePowerupEffect(Monster opponentMonster) {		
 			int totalStolenEnergy = 0;
 			
 			ArrayList<Monster> stationedMonsters = Board.getStationedMonsters();

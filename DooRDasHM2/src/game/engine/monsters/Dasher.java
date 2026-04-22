@@ -35,7 +35,6 @@ public class Dasher extends Monster {
     //Momentum Rush: 
     // sets how many turns to triple the speed to override move()
     public void executePowerupEffect(Monster opponentMonster) {
-             alterEnergy(-Constants.POWERUP_COST);
              momentumTurns = 3;
     }
 
