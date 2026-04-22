@@ -22,7 +22,6 @@ public class Schemer extends Monster {
 	//steals energy from the opponent & all stationed monsters, 
 	//gains a single total steal bonus at the end
 	public void executePowerupEffect(Monster opponentMonster) {
-		if (getEnergy() >= Constants.POWERUP_COST) {
 			alterEnergy(-Constants.POWERUP_COST);
 		
 			int totalStolenEnergy = 0;
@@ -34,7 +33,6 @@ public class Schemer extends Monster {
 			totalStolenEnergy += stealEnergyFrom(opponentMonster);
 			
 			alterEnergy(totalStolenEnergy);
-		}
 	}
 	
 }
