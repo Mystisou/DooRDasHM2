@@ -120,12 +120,15 @@ public class Board {
         if (landingPosition == opponentMonster.getPosition())
             throw new InvalidMoveException();
         else {
+        	boolean confused = false;
             int[] landingCoord = indexToRowCol(landingPosition);
             Cell landingCell = boardCells[landingCoord[0]][landingCoord[1]];
-
+            if(currentMonster.isConfused())
+            	confused = true;
             currentMonster.move(roll);
             landingCell.onLand(currentMonster, opponentMonster);
-
+            if(confused)
+            	currentMonster.decrementConfusion();
             updateMonsterPositions(currentMonster, opponentMonster);
         }
     }

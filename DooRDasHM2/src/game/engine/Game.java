@@ -22,13 +22,19 @@ public class Game {
 		this.player = selectRandomMonsterByRole(playerRole);
 		this.opponent = selectRandomMonsterByRole(playerRole == Role.SCARER ? Role.LAUGHER : Role.SCARER);
 		this.current = player;
-		ArrayList<Monster> stationed = new ArrayList<>(allMonsters);
-		stationed.remove(player);
-		stationed.remove(opponent);
-		Board.setStationedMonsters(stationed);
+		allMonsters.remove(player);
+		allMonsters.remove(opponent);
+		Board.setStationedMonsters(allMonsters);
 		board.initializeBoard(DataLoader.readCells());
 	}
-	
+	public static void main(String[] args) {
+		try {
+	        Game myGame = new Game(Role.LAUGHER);
+	    } catch (IOException e) {
+	        System.out.println("Error: Could not load the game files. Check your CSVs!");
+	        e.printStackTrace();
+	    }
+	}
 	public Board getBoard() {
 		return board;
 	}
@@ -84,10 +90,8 @@ public class Game {
 		
 		    if (current.isFrozen()) 
 		        current.setFrozen(false);
-		    else {	    
+		    else     
 		        board.moveMonster(current, rollDice(),getCurrentOpponent());
-		        current.decrementConfusion();
-		    }
 		    switchTurn();	
 	}
 	
