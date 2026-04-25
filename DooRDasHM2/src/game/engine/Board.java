@@ -54,51 +54,6 @@ public class Board {
         Board.cards = cards;
     }
 
-    /*public void initializeBoard(ArrayList<Cell> specialCells) {
-        
-    	int CsvCellsIndex = 0 ;
-        for (int i = 0; i < 100; i++) {
-            if (i % 2 == 0)
-                setCell(i, new Cell("Normal cell"));
-            else
-                setCell(i, specialCells.get(CsvCellsIndex++));
-        }
-        
-        
-        int BeltIndex = CsvCellsIndex;
-        int SockIndex = CsvCellsIndex + 1;
-        
-        
-        for (int i = 0 ; i < Constants.CONVEYOR_CELL_INDICES.length; i++) {
-            int index = Constants.CONVEYOR_CELL_INDICES[i];
-            ConveyorBelt c = (ConveyorBelt)specialCells.get(BeltIndex);
-            BeltIndex += 2;
-            setCell(index,c); 
-        }
-               
-        for (int i = 0 ; i < Constants.SOCK_CELL_INDICES.length; i++) {
-            int index = Constants.SOCK_CELL_INDICES[i];
-            ContaminationSock c = (ContaminationSock)specialCells.get(SockIndex);
-            SockIndex += 2;
-            setCell(index,c); 
-        }
-        
-        for (int i = 0 ; i < Constants.CARD_CELL_INDICES.length-2; i++) {
-            int index = Constants.CARD_CELL_INDICES[i];
-            ArrayList<Card> cards = Board.getOriginalCards();
-            Card c = cards.get(i);
-            setCell(index,new CardCell(c.getName())); 
-        }
-        
-        ArrayList<Monster> stationed = Board.getStationedMonsters();
-        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length; i++) {
-            int index = Constants.MONSTER_CELL_INDICES[i];
-            Monster m = stationed.get(i);
-            setCell(index,new MonsterCell(m.getName(),m)); 
-        }
-    }
-    */
-
     public void initializeBoard(ArrayList<Cell> specialCells) {
 
         int doorIndex = 0;
@@ -126,7 +81,7 @@ public class Board {
         }
 
         ArrayList<Monster> stationed = Board.getStationedMonsters();
-        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length && i < stationed.size(); i++) {
+        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length && i<stationed.size(); i++) {
             int index = Constants.MONSTER_CELL_INDICES[i];
             Monster m = stationed.get(i);
             m.setPosition(index);
