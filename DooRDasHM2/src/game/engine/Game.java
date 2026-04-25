@@ -27,6 +27,7 @@ public class Game {
 		Board.setStationedMonsters(allMonsters);
 		board.initializeBoard(DataLoader.readCells());
 	}
+	
 	public Board getBoard() {
 		return board;
 	}
