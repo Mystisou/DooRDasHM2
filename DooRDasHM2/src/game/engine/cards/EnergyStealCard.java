@@ -16,11 +16,14 @@ public class EnergyStealCard extends Card implements CanisterModifier {
 	}
 	
 	public void performAction(Monster player, Monster opponent) {
-		 int amountToSteal = Math.min(opponent.getEnergy(), this.getEnergy());
-		 int OldEnergy = opponent.getEnergy();
-		 this.modifyCanisterEnergy(opponent, -amountToSteal);
-		 int actualStolenAmount = OldEnergy - opponent.getEnergy();
-		 this.modifyCanisterEnergy(player, actualStolenAmount);
+		 if (opponent.isShielded()) {
+			 opponent.setShielded(false);
+			 return;
+		 }
+		 
+		 int stolen = Math.min(opponent.getEnergy(), energy);
+		 modifyCanisterEnergy(player,stolen);
+		 modifyCanisterEnergy(opponent,-stolen);
 	}
 
 	

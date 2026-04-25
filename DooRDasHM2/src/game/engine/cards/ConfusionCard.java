@@ -16,8 +16,8 @@ public class ConfusionCard extends Card {
 		player.setRole(opponent.getRole());
 		opponent.setRole(tempRole);
 		
-		player.setConfusionTurns(this.getDuration());
-		opponent.setConfusionTurns(this.getDuration());
+		player.setConfusionTurns(duration);
+		opponent.setConfusionTurns(duration);
 		
 	}
 	
