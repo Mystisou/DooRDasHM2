@@ -1,9 +1,15 @@
 package game.engine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import game.engine.cards.Card;
+import game.engine.cells.CardCell;
 import game.engine.cells.Cell;
+import game.engine.cells.ContaminationSock;
+import game.engine.cells.ConveyorBelt;
+import game.engine.cells.DoorCell;
+import game.engine.cells.MonsterCell;
 import game.engine.exceptions.InvalidMoveException;
 import game.engine.monsters.Monster;
 
@@ -48,24 +54,85 @@ public class Board {
         Board.cards = cards;
     }
 
-    public void initializeBoard(ArrayList<Cell> specialCells) {
-
-        int total = Constants.BOARD_ROWS * Constants.BOARD_COLS;
-
-        for (int i = 0; i < total; i++) {
-            setCell(i, new Cell("Cell"));
-        }
-
-        for (int i = 0; i < specialCells.size(); i++) {
-            setCell(i, specialCells.get(i));
-        }
-
+    /*public void initializeBoard(ArrayList<Cell> specialCells) {
         
-        for (Monster m : stationedMonsters) {
-            getCell(m.getPosition()).setMonster(m);
+    	int CsvCellsIndex = 0 ;
+        for (int i = 0; i < 100; i++) {
+            if (i % 2 == 0)
+                setCell(i, new Cell("Normal cell"));
+            else
+                setCell(i, specialCells.get(CsvCellsIndex++));
+        }
+        
+        
+        int BeltIndex = CsvCellsIndex;
+        int SockIndex = CsvCellsIndex + 1;
+        
+        
+        for (int i = 0 ; i < Constants.CONVEYOR_CELL_INDICES.length; i++) {
+            int index = Constants.CONVEYOR_CELL_INDICES[i];
+            ConveyorBelt c = (ConveyorBelt)specialCells.get(BeltIndex);
+            BeltIndex += 2;
+            setCell(index,c); 
+        }
+               
+        for (int i = 0 ; i < Constants.SOCK_CELL_INDICES.length; i++) {
+            int index = Constants.SOCK_CELL_INDICES[i];
+            ContaminationSock c = (ContaminationSock)specialCells.get(SockIndex);
+            SockIndex += 2;
+            setCell(index,c); 
+        }
+        
+        for (int i = 0 ; i < Constants.CARD_CELL_INDICES.length-2; i++) {
+            int index = Constants.CARD_CELL_INDICES[i];
+            ArrayList<Card> cards = Board.getOriginalCards();
+            Card c = cards.get(i);
+            setCell(index,new CardCell(c.getName())); 
+        }
+        
+        ArrayList<Monster> stationed = Board.getStationedMonsters();
+        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length; i++) {
+            int index = Constants.MONSTER_CELL_INDICES[i];
+            Monster m = stationed.get(i);
+            setCell(index,new MonsterCell(m.getName(),m)); 
         }
     }
+    */
 
+    public void initializeBoard(ArrayList<Cell> specialCells) {
+
+        int doorIndex = 0;
+        for (int i = 0; i < 100; i++) {
+            if (i % 2 == 0)
+                setCell(i, new Cell("Normal Cell"));
+            else
+                setCell(i, specialCells.get(doorIndex++));
+        }
+        
+        int beltIndex = 50;
+        for (int i = 0; i < Constants.CONVEYOR_CELL_INDICES.length; i++) {
+            setCell(Constants.CONVEYOR_CELL_INDICES[i], (ConveyorBelt) specialCells.get(beltIndex));
+            beltIndex += 2;
+        }
+
+        int sockIndex = 51;
+        for (int i = 0; i < Constants.SOCK_CELL_INDICES.length; i++) {
+            setCell(Constants.SOCK_CELL_INDICES[i], (ContaminationSock) specialCells.get(sockIndex));
+            sockIndex += 2;
+        }
+
+        for (int i = 0; i < Constants.CARD_CELL_INDICES.length; i++) {
+            setCell(Constants.CARD_CELL_INDICES[i], new CardCell("Card Cell"));
+        }
+
+        ArrayList<Monster> stationed = Board.getStationedMonsters();
+        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length && i < stationed.size(); i++) {
+            int index = Constants.MONSTER_CELL_INDICES[i];
+            Monster m = stationed.get(i);
+            m.setPosition(index);
+            setCell(index, new MonsterCell(m.getName(), m));
+        }
+    }
     public static void reloadCards() {
         cards = new ArrayList<>(originalCards);
         Collections.shuffle(cards);

@@ -27,14 +27,6 @@ public class Game {
 		Board.setStationedMonsters(allMonsters);
 		board.initializeBoard(DataLoader.readCells());
 	}
-	public static void main(String[] args) {
-		try {
-	        Game myGame = new Game(Role.LAUGHER);
-	    } catch (IOException e) {
-	        System.out.println("Error: Could not load the game files. Check your CSVs!");
-	        e.printStackTrace();
-	    }
-	}
 	public Board getBoard() {
 		return board;
 	}
