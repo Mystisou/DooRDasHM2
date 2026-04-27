@@ -14,11 +14,8 @@ public class MonsterCell extends Cell {
 		return this.cellMonster;
 	}
 	
-	public void onLand(Monster landingMonster, Monster opponentMonster) {
-		super.onLand(landingMonster, opponentMonster);
-		
-		Monster stationed = this.getCellMonster();
-		
+	public void onLand(Monster landingMonster, Monster opponentMonster) {	
+		Monster stationed = getCellMonster();
 		if(stationed != null) {
 			if(landingMonster.getRole() == stationed.getRole())
 				landingMonster.executePowerupEffect(opponentMonster);
@@ -27,17 +24,11 @@ public class MonsterCell extends Cell {
 				if(landingMonster.getEnergy() > stationed.getEnergy()) {
 					int playerOldEnergy = landingMonster.getEnergy();
 					int stationedOldEnergy = stationed.getEnergy();
-				
-					stationed.setEnergy(playerOldEnergy);
-				
 					int loss = stationedOldEnergy - playerOldEnergy;
-				
+					stationed.alterEnergy(-loss);						
 					landingMonster.alterEnergy(loss);
 				}
 			}
 		}
-	}
-
-	
-	
+	}		
 }

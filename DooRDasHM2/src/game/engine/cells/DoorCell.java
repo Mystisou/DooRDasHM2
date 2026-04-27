@@ -36,55 +36,92 @@ public class DoorCell extends Cell implements CanisterModifier {
 	}
 	
 	public void modifyCanisterEnergy(Monster monster, int canisterValue) {
-		monster.alterEnergy(canisterValue);
+		if(monster.getRole()==this.getRole())
+		    monster.alterEnergy(canisterValue);
+		else 
+			monster.alterEnergy(-canisterValue);
 	}
 	
 	public void onLand(Monster landingMonster, Monster opponentMonster) {
-        super.onLand(landingMonster, opponentMonster);
+		super.onLand(landingMonster, opponentMonster);
+		if(!isActivated()) {
+		  if(landingMonster.isShielded() && landingMonster.getRole()!=getRole())
+			  landingMonster.setShielded(false);
+		  else {
+		  boolean energyChanged = false ;
+		  modifyCanisterEnergy(landingMonster,getEnergy());
+		  ArrayList<Monster>stationed = Board.getStationedMonsters();
+    	  for(Monster m : stationed) {
+    		 if(m.getRole()==landingMonster.getRole()) {
+    		   int oldEnergy = m.getEnergy();
+    		   modifyCanisterEnergy(m,getEnergy());
+    		   int newEnergy = m.getEnergy();
+    		   if(oldEnergy!=newEnergy)
+    			   energyChanged = true;
+    		}
+    	}
+    	    if(energyChanged)
+    		setActivated(true);
+    		
+	      }
+	    }
+	}
+	/*public void onLand(Monster landingMonster, Monster opponentMonster) {
+		super.onLand(landingMonster, opponentMonster);
 
-        if (!this.isActivated()) {
-            
-            int energyChange = this.getEnergy();
+        if (!isActivated()) {            
             if (landingMonster.getRole() != this.getRole()) {
-                energyChange = -energyChange;
+            	if(landingMonster.isShielded()) 
+            		landingMonster.setShielded(false);
+            	else {
+            		modifyCanisterEnergy(landingMonster,-getEnergy());
+            		ArrayList<Monster>stationed = Board.getStationedMonsters();
+                	for(Monster m : stationed) {
+                		if(m.getRole()==landingMonster.getRole())
+                		modifyCanisterEnergy(m,-getEnergy());
+                	}
+                    this.setActivated(true);
+            	}
             }
-
-            boolean energyWasModified = false;
-            int oldLandingEnergy = landingMonster.getEnergy();
-
-            boolean teamIsProtected = false;
-            if (energyChange < 0 && landingMonster.isShielded()) {
-                teamIsProtected = true;
-            }
-
-            this.modifyCanisterEnergy(landingMonster, energyChange);
-            
-            if (landingMonster.getEnergy() != oldLandingEnergy) {
-                energyWasModified = true;
-            }
-            ArrayList<Monster> stationed = Board.getStationedMonsters();
-            
-            if (stationed != null) {
-                for (Monster m : stationed) {
-                    if (m.getRole() == landingMonster.getRole()) {
-                        
-                        if (!teamIsProtected) {
-                            int oldStationedEnergy = m.getEnergy();
-                            this.modifyCanisterEnergy(m, energyChange);
-                            
-                            if (m.getEnergy() != oldStationedEnergy) {
-                                energyWasModified = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (energyWasModified) {
+            else {
+            	modifyCanisterEnergy(landingMonster,getEnergy());
+            	ArrayList<Monster>stationed = Board.getStationedMonsters();
+            	for(Monster m : stationed) {
+            		if(m.getRole()==landingMonster.getRole())
+            		modifyCanisterEnergy(m,getEnergy());
+            	}
                 this.setActivated(true);
             }
-        }
-    }
+       }
+	}
 	
+	/*public void onLand(Monster landingMonster, Monster opponentMonster) {
+		super.onLand(landingMonster, opponentMonster);
 
+        if (!isActivated()) {            
+            if (landingMonster.getRole() != this.getRole()) {
+            	if(landingMonster.isShielded()) 
+            		landingMonster.setShielded(false);
+            	else
+            		modifyCanisterEnergy(landingMonster,-getEnergy());
+            	else {
+            		
+            		ArrayList<Monster>stationed = Board.getStationedMonsters();
+                	for(Monster m : stationed) {
+                		modifyCanisterEnergy(m,-getEnergy());
+                	}
+                    this.setActivated(true);
+            	}
+            }
+            else {
+            	modifyCanisterEnergy(landingMonster,getEnergy());
+            	ArrayList<Monster>stationed = Board.getStationedMonsters();
+            	for(Monster m : stationed) {
+            		modifyCanisterEnergy(m,getEnergy());
+            	}
+                this.setActivated(true);
+            }
+       }
+	}
+    */
 }

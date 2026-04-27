@@ -24,11 +24,11 @@ public class Cell {
 	}
 	
 	public boolean isOccupied() {
-		return this.getMonster() != null;
+		return getMonster() != null;
 	}
     
 	
 	public void onLand(Monster landingMonster, Monster opponentMonster) {
-		this.setMonster(landingMonster);
+		setMonster(landingMonster);
 	}
 }
