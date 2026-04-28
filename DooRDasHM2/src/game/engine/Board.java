@@ -8,7 +8,6 @@ import game.engine.cells.CardCell;
 import game.engine.cells.Cell;
 import game.engine.cells.ContaminationSock;
 import game.engine.cells.ConveyorBelt;
-import game.engine.cells.DoorCell;
 import game.engine.cells.MonsterCell;
 import game.engine.exceptions.InvalidMoveException;
 import game.engine.monsters.Monster;
@@ -136,21 +135,20 @@ public class Board {
 
     public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster)
             throws InvalidMoveException {
+        int oldPosition = currentMonster.getPosition();
+        currentMonster.move(roll); 
+        int newPosition = currentMonster.getPosition();
 
-        int landingPosition = currentMonster.getPosition() + roll;
-
-        if (landingPosition == opponentMonster.getPosition())
+        if (newPosition == opponentMonster.getPosition()) {
+            currentMonster.setPosition(oldPosition); // revert
             throw new InvalidMoveException();
+        }
         else {
-        	boolean confused = false;
-            int[] landingCoord = indexToRowCol(landingPosition);
-            Cell landingCell = boardCells[landingCoord[0]][landingCoord[1]];
-            if(currentMonster.isConfused())
-            	confused = true;
-            currentMonster.move(roll);
-            landingCell.onLand(currentMonster, opponentMonster);
-            if(confused)
+            Cell landingCell = getCell(newPosition);
+            if(currentMonster.isConfused()) 
             	currentMonster.decrementConfusion();
+
+            landingCell.onLand(currentMonster, opponentMonster);           	
             updateMonsterPositions(currentMonster, opponentMonster);
         }
     }

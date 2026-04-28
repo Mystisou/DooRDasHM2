@@ -1,6 +1,6 @@
 package game.engine.cards;
 
-import game.engine.Constants;
+
 import game.engine.monsters.Monster;
 
 public class StartOverCard extends Card {

@@ -12,6 +12,4 @@ public class ShieldCard extends Card {
 		player.setShielded(true);
 		opponent.setShielded(false);
 	}
-
-
 }

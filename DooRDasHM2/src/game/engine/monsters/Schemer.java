@@ -13,9 +13,12 @@ public class Schemer extends Monster {
 	}
 	
 	private int stealEnergyFrom(Monster target) {
-        int stolenEnergy = Math.min(Constants.SCHEMER_STEAL, target.getEnergy());
-        target.alterEnergy(-stolenEnergy);
-        return stolenEnergy;
+	    int stolenEnergy = Math.min(Constants.SCHEMER_STEAL, target.getEnergy());
+	    boolean wasShielded = target.isShielded();
+	    target.setShielded(false);       // bypass shield
+	    target.alterEnergy(-stolenEnergy); // type bonuses still apply
+	    target.setShielded(wasShielded); // restore shield without consuming it
+	    return stolenEnergy;
 	}
 
 	//Chain Attack: 
