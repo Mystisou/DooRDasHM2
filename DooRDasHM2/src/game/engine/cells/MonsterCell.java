@@ -13,13 +13,13 @@ public class MonsterCell extends Cell {
 	public Monster getCellMonster() {
 		return this.cellMonster;
 	}
-	
+
 	public void onLand(Monster landingMonster, Monster opponentMonster) {	
 		Monster stationed = getCellMonster();
 		if(stationed != null) {
 			if(landingMonster.getRole() == stationed.getRole())
 				landingMonster.executePowerupEffect(opponentMonster);
-		
+
 			else {
 				if(landingMonster.getEnergy() > stationed.getEnergy()) {
 					int playerOldEnergy = landingMonster.getEnergy();

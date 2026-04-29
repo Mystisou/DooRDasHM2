@@ -15,7 +15,7 @@ public class Game {
 	private Monster player;
 	private Monster opponent;
 	private Monster current;
-	
+
 	public Game(Role playerRole) throws IOException {
 		this.board = new Board(DataLoader.readCards());		
 		this.allMonsters = DataLoader.readMonsters();		
@@ -27,45 +27,45 @@ public class Game {
 		Board.setStationedMonsters(allMonsters);
 		board.initializeBoard(DataLoader.readCells());
 	}
-	
+
 	public Board getBoard() {
 		return board;
 	}
-	
+
 	public ArrayList<Monster> getAllMonsters() {
 		return allMonsters; 
 	}
-	
+
 	public Monster getPlayer() {
 		return player;
 	}
-	
+
 	public Monster getOpponent() {
 		return opponent;
 	}
-	
+
 	public Monster getCurrent() {
 		return current;
 	}
-	
+
 	public void setCurrent(Monster current) {
 		this.current = current;
 	}
-	
+
 	private Monster selectRandomMonsterByRole(Role role) {
 		Collections.shuffle(allMonsters);
-	    return allMonsters.stream()
-	    		.filter(m -> m.getRole() == role)
-	    		.findFirst()
-	    		.orElse(null);
+		return allMonsters.stream()
+				.filter(m -> m.getRole() == role)
+				.findFirst()
+				.orElse(null);
 	}
-	
+
 	private Monster getCurrentOpponent() {
 		if(current==opponent)
 			return player;
 		return opponent;
 	}
-	
+
 	private int rollDice() {
 		return (int)(Math.random()*6)+1	;
 	}
@@ -78,28 +78,28 @@ public class Game {
 		else
 			throw new OutOfEnergyException();
 	}
-	
+
 	public void playTurn() throws InvalidMoveException{
-		
-		    if (current.isFrozen()) 
-		        current.setFrozen(false);
-		    else     
-		        board.moveMonster(current, rollDice(),getCurrentOpponent());
-		    switchTurn();	
+
+		if (current.isFrozen()) 
+			current.setFrozen(false);
+		else     
+			board.moveMonster(current, rollDice(),getCurrentOpponent());
+		switchTurn();	
 	}
-	
+
 	private void switchTurn(){
 		if(current == player)
 			current = opponent;
 		else
 			current = player;
 	}
-	
+
 	private boolean checkWinCondition(Monster monster) {
 		if(monster==null) return false;
 		return monster.getEnergy()>=1000 && monster.getPosition()==99;
 	}
-	
+
 	public Monster getWinner(){
 		if(checkWinCondition(player))
 			return player;
@@ -107,5 +107,5 @@ public class Game {
 			return opponent;
 		return null;
 	}
-	
+
 }

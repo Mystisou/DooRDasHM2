@@ -14,159 +14,160 @@ import game.engine.monsters.Monster;
 
 public class Board {
 
-    private Cell[][] boardCells;
-    private static ArrayList<Monster> stationedMonsters;
-    private static ArrayList<Card> originalCards;
-    public static ArrayList<Card> cards;
+	private Cell[][] boardCells;
+	private static ArrayList<Monster> stationedMonsters;
+	private static ArrayList<Card> originalCards;
+	public static ArrayList<Card> cards;
 
-    public Board(ArrayList<Card> readCards) {
-        this.boardCells = new Cell[Constants.BOARD_ROWS][Constants.BOARD_COLS];
-        stationedMonsters = new ArrayList<>();
-        originalCards = readCards;
-        cards = new ArrayList<>();
+	public Board(ArrayList<Card> readCards) {
+		this.boardCells = new Cell[Constants.BOARD_ROWS][Constants.BOARD_COLS];
+		stationedMonsters = new ArrayList<>();
+		originalCards = readCards;
+		cards = new ArrayList<>();
 
-        setCardsByRarity();
-        reloadCards();
-    }
+		setCardsByRarity();
+		reloadCards();
+	}
 
-    public Cell[][] getBoardCells() {
-        return boardCells;
-    }
+	public Cell[][] getBoardCells() {
+		return boardCells;
+	}
 
-    public static ArrayList<Monster> getStationedMonsters() {
-        return stationedMonsters;
-    }
+	public static ArrayList<Monster> getStationedMonsters() {
+		return stationedMonsters;
+	}
 
-    public static void setStationedMonsters(ArrayList<Monster> stationedMonsters) {
-        Board.stationedMonsters = stationedMonsters;
-    }
+	public static void setStationedMonsters(ArrayList<Monster> stationedMonsters) {
+		Board.stationedMonsters = stationedMonsters;
+	}
 
-    public static ArrayList<Card> getOriginalCards() {
-        return originalCards;
-    }
+	public static ArrayList<Card> getOriginalCards() {
+		return originalCards;
+	}
 
-    public static ArrayList<Card> getCards() {
-        return cards;
-    }
+	public static ArrayList<Card> getCards() {
+		return cards;
+	}
 
-    public static void setCards(ArrayList<Card> cards) {
-        Board.cards = cards;
-    }
+	public static void setCards(ArrayList<Card> cards) {
+		Board.cards = cards;
+	}
 
-    public void initializeBoard(ArrayList<Cell> specialCells) {
+	public void initializeBoard(ArrayList<Cell> specialCells) {
 
-        int doorIndex = 0;
-        for (int i = 0; i < 100; i++) {
-            if (i % 2 == 0)
-                setCell(i, new Cell("Normal Cell"));
-            else
-                setCell(i, specialCells.get(doorIndex++));
-        }
-        
-        int beltIndex = 50;
-        for (int i = 0; i < Constants.CONVEYOR_CELL_INDICES.length; i++) {
-            setCell(Constants.CONVEYOR_CELL_INDICES[i], (ConveyorBelt) specialCells.get(beltIndex));
-            beltIndex += 2;
-        }
+		int doorIndex = 0;
+		for (int i = 0; i < 100; i++) {
+			if (i % 2 == 0)
+				setCell(i, new Cell("Normal Cell"));
+			else
+				setCell(i, specialCells.get(doorIndex++));
+		}
 
-        int sockIndex = 51;
-        for (int i = 0; i < Constants.SOCK_CELL_INDICES.length; i++) {
-            setCell(Constants.SOCK_CELL_INDICES[i], (ContaminationSock) specialCells.get(sockIndex));
-            sockIndex += 2;
-        }
+		int beltIndex = 50;
+		for (int i = 0; i < Constants.CONVEYOR_CELL_INDICES.length; i++) {
+			setCell(Constants.CONVEYOR_CELL_INDICES[i], (ConveyorBelt) specialCells.get(beltIndex));
+			beltIndex += 2;
+		}
 
-        for (int i = 0; i < Constants.CARD_CELL_INDICES.length; i++) {
-            setCell(Constants.CARD_CELL_INDICES[i], new CardCell("Card Cell"));
-        }
+		int sockIndex = 51;
+		for (int i = 0; i < Constants.SOCK_CELL_INDICES.length; i++) {
+			setCell(Constants.SOCK_CELL_INDICES[i], (ContaminationSock) specialCells.get(sockIndex));
+			sockIndex += 2;
+		}
 
-        ArrayList<Monster> stationed = Board.getStationedMonsters();
-        for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length && i<stationed.size(); i++) {
-            int index = Constants.MONSTER_CELL_INDICES[i];
-            Monster m = stationed.get(i);
-            m.setPosition(index);
-            setCell(index, new MonsterCell(m.getName(), m));
-        }
-    }
-    public static void reloadCards() {
-        cards = new ArrayList<>(originalCards);
-        Collections.shuffle(cards);
-    }
+		for (int i = 0; i < Constants.CARD_CELL_INDICES.length; i++) {
+			setCell(Constants.CARD_CELL_INDICES[i], new CardCell("Card Cell"));
+		}
 
-    public static Card drawCard() {
-        if (cards.isEmpty())
-            reloadCards();
+		ArrayList<Monster> stationed = Board.getStationedMonsters();
+		for (int i = 0; i < Constants.MONSTER_CELL_INDICES.length && i<stationed.size(); i++) {
+			int index = Constants.MONSTER_CELL_INDICES[i];
+			Monster m = stationed.get(i);
+			m.setPosition(index);
+			setCell(index, new MonsterCell(m.getName(), m));
+		}
+	}
+	
+	public static void reloadCards() {
+		cards = new ArrayList<>(originalCards);
+		Collections.shuffle(cards);
+	}
 
-        return cards.remove(0);
-    }
+	public static Card drawCard() {
+		if (cards.isEmpty())
+			reloadCards();
 
-    private int[] indexToRowCol(int index) {
-        int row = index / Constants.BOARD_COLS;
-        int col;
+		return cards.remove(0);
+	}
 
-        if (row % 2 == 0)
-            col = index % Constants.BOARD_COLS;
-        else
-            col = Constants.BOARD_COLS - 1 - (index % Constants.BOARD_COLS);
+	private int[] indexToRowCol(int index) {
+		int row = index / Constants.BOARD_COLS;
+		int col;
 
-        return new int[] { row, col };
-    }
+		if (row % 2 == 0)
+			col = index % Constants.BOARD_COLS;
+		else
+			col = Constants.BOARD_COLS - 1 - (index % Constants.BOARD_COLS);
 
-    private Cell getCell(int index) {
-        int[] pos = indexToRowCol(index);
-        return boardCells[pos[0]][pos[1]];
-    }
+		return new int[] { row, col };
+	}
 
-    private void setCell(int index, Cell cell) {
-        int[] pos = indexToRowCol(index);
-        boardCells[pos[0]][pos[1]] = cell;
-    }
+	private Cell getCell(int index) {
+		int[] pos = indexToRowCol(index);
+		return boardCells[pos[0]][pos[1]];
+	}
 
-    private void setCardsByRarity() {
-        ArrayList<Card> expanded = new ArrayList<>();
+	private void setCell(int index, Cell cell) {
+		int[] pos = indexToRowCol(index);
+		boardCells[pos[0]][pos[1]] = cell;
+	}
 
-        for (Card c : originalCards) {
-            for (int i = 0; i < c.getRarity(); i++) {
-                expanded.add(c);
-            }
-        }
+	private void setCardsByRarity() {
+		ArrayList<Card> expanded = new ArrayList<>();
 
-        originalCards = expanded;
-    }
+		for (Card c : originalCards) {
+			for (int i = 0; i < c.getRarity(); i++) {
+				expanded.add(c);
+			}
+		}
 
-    public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster)
-            throws InvalidMoveException {
+		originalCards = expanded;
+	}
 
-        boolean confused = false;
-        if(currentMonster.isConfused())
-            confused = true ;
-        int oldPosition = currentMonster.getPosition();
-        currentMonster.move(roll); 
-        int newPosition = currentMonster.getPosition();
+	public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster)
+			throws InvalidMoveException {
 
-        if (newPosition == opponentMonster.getPosition()) {
-            currentMonster.setPosition(oldPosition); // revert
-            throw new InvalidMoveException();
-        }
-        else {
-            Cell landingCell = getCell(newPosition);               
-            landingCell.onLand(currentMonster, opponentMonster);           	
-            updateMonsterPositions(currentMonster, opponentMonster);
-            if(confused){
-                currentMonster.decrementConfusion();
-                opponentMonster.decrementConfusion();
-            }
-        }
-    }
+		boolean confused = false;
+		if(currentMonster.isConfused())
+			confused = true ;
+		int oldPosition = currentMonster.getPosition();
+		currentMonster.move(roll); 
+		int newPosition = currentMonster.getPosition();
 
-    private void updateMonsterPositions(Monster player, Monster opponent) {
+		if (newPosition == opponentMonster.getPosition()) {
+			currentMonster.setPosition(oldPosition); // revert
+			throw new InvalidMoveException();
+		}
+		else {
+			Cell landingCell = getCell(newPosition);               
+			landingCell.onLand(currentMonster, opponentMonster);           	
+			updateMonsterPositions(currentMonster, opponentMonster);
+			if(confused){
+				currentMonster.decrementConfusion();
+				opponentMonster.decrementConfusion();
+			}
+		}
+	}
 
-        int total = Constants.BOARD_ROWS * Constants.BOARD_COLS;
+	private void updateMonsterPositions(Monster player, Monster opponent) {
 
-        for (int i = 0; i < total; i++) {
-            getCell(i).setMonster(null);
-        }
+		int total = Constants.BOARD_ROWS * Constants.BOARD_COLS;
 
-        getCell(player.getPosition()).setMonster(player);
-        getCell(opponent.getPosition()).setMonster(opponent);
-    }
+		for (int i = 0; i < total; i++) {
+			getCell(i).setMonster(null);
+		}
+
+		getCell(player.getPosition()).setMonster(player);
+		getCell(opponent.getPosition()).setMonster(opponent);
+	}
 }
