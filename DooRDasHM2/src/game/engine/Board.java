@@ -135,6 +135,10 @@ public class Board {
 
     public void moveMonster(Monster currentMonster, int roll, Monster opponentMonster)
             throws InvalidMoveException {
+
+        boolean confused = false;
+        if(currentMonster.isConfused())
+            confused = true ;
         int oldPosition = currentMonster.getPosition();
         currentMonster.move(roll); 
         int newPosition = currentMonster.getPosition();
@@ -144,12 +148,13 @@ public class Board {
             throw new InvalidMoveException();
         }
         else {
-            Cell landingCell = getCell(newPosition);
-            if(currentMonster.isConfused()) 
-            	currentMonster.decrementConfusion();
-
+            Cell landingCell = getCell(newPosition);               
             landingCell.onLand(currentMonster, opponentMonster);           	
             updateMonsterPositions(currentMonster, opponentMonster);
+            if(confused){
+                currentMonster.decrementConfusion();
+                opponentMonster.decrementConfusion();
+            }
         }
     }
 
