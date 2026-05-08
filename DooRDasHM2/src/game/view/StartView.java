@@ -36,7 +36,14 @@ public class StartView extends VBox {
         startBtn.setPrefSize(150, 50);
 
         startBtn.setOnAction(e -> {
-            String selectedRole = scarer.isSelected() ? "SCARER" : "LAUGHER";
+            String selectedRole;
+
+            if (scarer.isSelected()) {
+                selectedRole = "SCARER";
+            } else {
+                selectedRole = "LAUGHER";
+            }
+
             System.out.println("Role selected: " + selectedRole);
             
             // Logic to transition to the Game Board goes here later
