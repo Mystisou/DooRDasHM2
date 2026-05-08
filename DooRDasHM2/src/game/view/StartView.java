@@ -7,51 +7,56 @@ import javafx.scene.layout.*;
 public class StartView extends VBox {
 
     public StartView() {
-        this.setSpacing(20);
+        this.setSpacing(25);
         this.setAlignment(Pos.CENTER);
-        this.setStyle("-fx-background-color: #f0f0f0; -fx-padding: 40;");
+        this.setStyle("-fx-background-color: #2c3e50; -fx-padding: 50;");
 
-        Label title = new Label("DooR DasH: Scarer vs Laugher");
-        title.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+        
+        Label title = new Label("DooR DasH: Scare vs Laugh");
+        title.setStyle("-fx-font-size: 32px; -fx-text-fill: white; -fx-font-weight: bold;");
 
-        TextArea instructions = new TextArea("HOW TO PLAY:\n1. Choose your role.\n2. Reach cell 99 with 1000 energy to win!\n3. Avoid the socks!");
+        
+        TextArea instructions = new TextArea("HOW TO PLAY:\n"
+                + "1. Select your monster's role.\n"
+                + "2. Navigate the 100-cell grid.\n"
+                + "3. Reach cell 99 with at least 1000 energy to win!\n"
+                + "4. Watch out for contamination socks.");
         instructions.setEditable(false);
         instructions.setWrapText(true);
-        instructions.setMaxWidth(500);
-        instructions.setPrefHeight(120);
+        instructions.setMaxWidth(600);
+        instructions.setPrefHeight(150);
 
-        Label chooseYourRole = new Label("Select Your Side:");
+        
+        Label choose = new Label("Choose Your Side:");
+        choose.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
         RadioButton scarer = new RadioButton("SCARER");
         RadioButton laugher = new RadioButton("LAUGHER");
+        scarer.setStyle("-fx-text-fill: white;");
+        laugher.setStyle("-fx-text-fill: white;");
+
+        ToggleGroup roleGroup = new ToggleGroup();
+        scarer.setToggleGroup(roleGroup);
+        laugher.setToggleGroup(roleGroup);
+        scarer.setSelected(true);
+
+        HBox roleBox = new HBox(40, scarer, laugher);
+        roleBox.setAlignment(Pos.CENTER);
+
         
-        ToggleGroup group = new ToggleGroup();
-        scarer.setToggleGroup(group);
-        laugher.setToggleGroup(group);
-        scarer.setSelected(true); 
-
-        HBox roles = new HBox(30, scarer, laugher);
-        roles.setAlignment(Pos.CENTER);
-
-        Button startBtn = new Button("START GAME");
-        startBtn.setPrefSize(150, 50);
-
+        Button startBtn = new Button("ENTER THE FLOOR");
+        startBtn.setPrefSize(200, 50);
         startBtn.setOnAction(e -> {
-            String selectedRole;
-
-            if (scarer.isSelected()) {
-                selectedRole = "SCARER";
-            } else {
-                selectedRole = "LAUGHER";
-            }
-
-            System.out.println("Role selected: " + selectedRole);
+            String selected = scarer.isSelected() ? "SCARER" : "LAUGHER";
+            System.out.println("Starting game as: " + selected);
             
-            // Logic to transition to the Game Board goes here later
-            // For now, let's just show a simple "Game Started" label
+            // Placeholder for the Game Screen
             
-            ViewManager.updateView(new StackPane(new Label("Game Board Loading...")));
+            Label tempLabel = new Label("Loading Game as " + selected + "...");
+            tempLabel.setStyle("-fx-font-size: 24px;");
+            ViewManager.updateView(new StackPane(tempLabel));
         });
 
-        this.getChildren().addAll(title, instructions, chooseYourRole, roles, startBtn);
+        this.getChildren().addAll(title, instructions, choose, roleBox, startBtn);
     }
 }
