@@ -20,7 +20,7 @@ public class StartView extends VBox {
         instructions.setMaxWidth(500);
         instructions.setPrefHeight(120);
 
-        Label roleLabel = new Label("Select Your Side:");
+        Label chooseYourRole = new Label("Select Your Side:");
         RadioButton scarer = new RadioButton("SCARER");
         RadioButton laugher = new RadioButton("LAUGHER");
         
@@ -45,6 +45,6 @@ public class StartView extends VBox {
             ViewManager.updateView(new StackPane(new Label("Game Board Loading...")));
         });
 
-        this.getChildren().addAll(title, instructions, roleLabel, roles, startBtn);
+        this.getChildren().addAll(title, instructions, chooseYourRole, roles, startBtn);
     }
 }
