@@ -19,7 +19,6 @@ public class ViewManager {
     public static void updateView(Pane newLayout) {
         Button globalCloseBtn = new Button("X");
         globalCloseBtn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 18px; -fx-cursor: hand;");
-        
         globalCloseBtn.setOnAction(e -> Platform.exit());
 
         StackPane rootWrapper = new StackPane();
@@ -28,11 +27,9 @@ public class ViewManager {
         StackPane.setAlignment(globalCloseBtn, Pos.TOP_RIGHT);
         StackPane.setMargin(globalCloseBtn, new Insets(15, 15, 0, 0));
 
-        if (ViewStage.getScene() == null) {
-            ViewStage.setScene(new Scene(rootWrapper, 1000, 800)); 
-        } else {
+        if (ViewStage.getScene() == null)
+            ViewStage.setScene(new Scene(rootWrapper, 1000, 800));
+        else
             ViewStage.getScene().setRoot(rootWrapper);
-        }
     }
 }
-

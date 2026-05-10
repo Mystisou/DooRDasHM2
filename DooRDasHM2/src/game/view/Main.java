@@ -7,8 +7,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-    	
-    	
         ViewManager.setStage(primaryStage);
         
         StartView startScreen = new StartView();

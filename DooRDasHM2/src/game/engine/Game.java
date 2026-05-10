@@ -15,6 +15,7 @@ public class Game {
 	private Monster player;
 	private Monster opponent;
 	private Monster current;
+	private int lastRoll = 0; // tracks the most recent dice result for the UI
 
 	public Game(Role playerRole) throws IOException {
 		this.board = new Board(DataLoader.readCards());		
@@ -67,7 +68,12 @@ public class Game {
 	}
 
 	private int rollDice() {
-		return (int)(Math.random()*6)+1	;
+		lastRoll = (int)(Math.random() * 6) + 1;
+		return lastRoll;
+	}
+
+	public int getLastRoll() {
+		return lastRoll;
 	}
 
 	public void usePowerup() throws OutOfEnergyException {

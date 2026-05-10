@@ -112,7 +112,13 @@ public class Board {
 		return new int[] { row, col };
 	}
 
-	private Cell getCell(int index) {
+	/** Public accessor so the Controller can read cell data (e.g. door energy). */
+	public Cell getCell(int index) {
+		int[] pos = indexToRowCol(index);
+		return boardCells[pos[0]][pos[1]];
+	}
+
+	private Cell getCellPrivate(int index) {
 		int[] pos = indexToRowCol(index);
 		return boardCells[pos[0]][pos[1]];
 	}
@@ -149,7 +155,7 @@ public class Board {
 			throw new InvalidMoveException();
 		}
 		else {
-			Cell landingCell = getCell(newPosition);               
+			Cell landingCell = getCellPrivate(newPosition);               
 			landingCell.onLand(currentMonster, opponentMonster);           	
 			updateMonsterPositions(currentMonster, opponentMonster);
 			if(confused){
@@ -164,10 +170,10 @@ public class Board {
 		int total = Constants.BOARD_ROWS * Constants.BOARD_COLS;
 
 		for (int i = 0; i < total; i++) {
-			getCell(i).setMonster(null);
+			getCellPrivate(i).setMonster(null);
 		}
 
-		getCell(player.getPosition()).setMonster(player);
-		getCell(opponent.getPosition()).setMonster(opponent);
+		getCellPrivate(player.getPosition()).setMonster(player);
+		getCellPrivate(opponent.getPosition()).setMonster(opponent);
 	}
 }
