@@ -1,4 +1,4 @@
-package game.view;
+package game.gui.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,7 +39,7 @@ public class WinView extends VBox {
 
         // Side-by-side final-energy cards
         HBox cardsRow = new HBox(50, buildResultCard(winnerName, winnerEnergy, true),
-                                      buildResultCard(loserName,  loserEnergy,  false));
+                                     buildResultCard(loserName,  loserEnergy,  false));
         cardsRow.setAlignment(Pos.CENTER);
 
         // Return button

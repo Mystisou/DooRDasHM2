@@ -1,4 +1,4 @@
-package game.view;
+package game.gui.view;
 
 import game.engine.Constants;
 import javafx.geometry.Insets;

@@ -1,4 +1,4 @@
-package game.view;
+package game.gui.view;
 
 import game.controller.GameController;
 import game.engine.Game;

@@ -6,9 +6,9 @@ import game.engine.cells.DoorCell;
 import game.engine.exceptions.InvalidMoveException;
 import game.engine.exceptions.OutOfEnergyException;
 import game.engine.monsters.Monster;
-import game.view.GameView;
-import game.view.ViewManager;
-import game.view.WinView;
+import game.gui.view.GameView;
+import game.gui.view.ViewManager;
+import game.gui.view.WinView;
 
 /**
  * CONTROLLER — wires the Game engine to the GameView.

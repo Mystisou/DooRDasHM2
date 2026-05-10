@@ -1,5 +1,7 @@
-package game.view;
+package game.gui;
 
+import game.gui.view.StartView;
+import game.gui.view.ViewManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
