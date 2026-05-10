@@ -1,8 +1,17 @@
 package game.view;
 
+import game.controller.Controller;
+import game.engine.Game;
+import game.engine.Role;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 public class StartView extends VBox {
 
@@ -47,14 +56,18 @@ public class StartView extends VBox {
         Button startBtn = new Button("ENTER THE FLOOR");
         startBtn.setPrefSize(200, 50);
         startBtn.setOnAction(e -> {
-            String selected = scarer.isSelected() ? "SCARER" : "LAUGHER";
-            System.out.println("Starting game as: " + selected);
-            
-            // Placeholder for the Game Screen
-            
-            Label tempLabel = new Label("Loading Game as " + selected + "...");
-            tempLabel.setStyle("-fx-font-size: 24px;");
-            ViewManager.updateView(new StackPane(tempLabel));
+            try {
+                Role startingRole = scarer.isSelected() ? Role.SCARER : Role.LAUGHER;
+                Game newGame = new Game(startingRole);
+                GameView gameScreen = new GameView();
+                Controller controller = new Controller(newGame, gameScreen);
+                ViewManager.updateView(gameScreen);
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Loading Error");
+                alert.setContentText("Could not load the game files. Check your CSVs!");
+                alert.showAndWait();
+            }
         });
 
         this.getChildren().addAll(title, instructions, choose, roleBox, startBtn);

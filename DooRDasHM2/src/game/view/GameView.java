@@ -16,7 +16,7 @@ public class GameView extends BorderPane {
 	private Label player1Stats;
 	private Label player2Stats;
 	private Label gameLog;
-
+	
 	private Circle playerIcon;
 	private Circle opponentIcon;
 
@@ -63,7 +63,7 @@ public class GameView extends BorderPane {
 
 		controlBtns.getChildren().addAll(rollBtn, powerBtn);
 		this.setBottom(controlBtns);
-
+        		
 		playerIcon = new Circle(12, Color.CYAN);
 		opponentIcon = new Circle(12, Color.MAGENTA);
 
