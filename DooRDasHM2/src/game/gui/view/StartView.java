@@ -1,8 +1,8 @@
 package game.gui.view;
 
-import game.controller.GameController;
 import game.engine.Game;
 import game.engine.Role;
+import game.gui.controller.GameController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -292,7 +292,7 @@ public class StartView extends VBox {
     //  ENTER BUTTON
     // ═════════════════════════════════════════════════════════════════════════
     private Button buildEnterButton(Label errorLbl) {
-        Button btn = new Button("ENTER THE FLOOR");
+        Button btn = new Button("START");
         btn.setFont(loadFont(F_PIXEL, 11));
         btn.setPrefSize(270, 46);
         applyBtnStyle(btn, RED_BTN);
@@ -302,13 +302,9 @@ public class StartView extends VBox {
 
         btn.setOnAction(e -> {
             try {
-                Game game         = new Game(Role.valueOf(selectedRole));
-                GameView gameView = new GameView();
-                new GameController(game, gameView);
-                ViewManager.updateView(gameView);
+                ViewManager.updateView(new InstructionsView(selectedRole)); // ← was: new Game + GameView
             } catch (Exception ex) {
-                errorLbl.setText("Failed to load game: " + ex.getMessage());
-                ex.printStackTrace();
+                errorLbl.setText("Failed to load: " + ex.getMessage());
             }
         });
         return btn;

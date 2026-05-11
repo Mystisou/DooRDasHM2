@@ -8,15 +8,11 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        ViewManager.setStage(primaryStage);
-
-        StartView startScreen = new StartView();
-
-        ViewManager.updateView(startScreen);
-
-        primaryStage.setTitle("DooR DasH");
-        primaryStage.show();
+    public void start(Stage stage) {
+        ViewManager.setStage(stage);
+        stage.setTitle("DoorDasH");
+        stage.show();
+        ViewManager.updateView(new StartView());
     }
 
     public static void main(String[] args) {

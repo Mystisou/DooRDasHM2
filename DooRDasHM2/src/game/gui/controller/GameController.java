@@ -1,4 +1,4 @@
-package game.controller;
+package game.gui.controller;
 
 import game.engine.Game;
 import game.engine.cells.Cell;
@@ -54,7 +54,7 @@ public class GameController {
     // ── Button handlers ──────────────────────────────────────────────
 
     private void setupHandlers() {
-        gameView.getRollBtn() .setOnAction(e -> handleRoll());
+        gameView.getDiceImageView().setOnMouseClicked(e -> handleRoll()); // ← was getRollBtn()
         gameView.getPowerBtn().setOnAction(e -> handlePower());
     }
 
@@ -153,10 +153,9 @@ public class GameController {
     }
 
     private void updateTurnLog() {
-        Monster current = game.getCurrent();
-        boolean isPlayerTurn = current == game.getPlayer();
-        String prefix = isPlayerTurn ? "🎯 YOUR TURN" : "⚔  OPPONENT'S TURN";
-        gameView.updateLog(prefix + " — " + current.getName());
+        boolean isPlayerTurn = game.getCurrent() == game.getPlayer();
+        gameView.updateLog(isPlayerTurn ? "⚔   YOUR TURN!" : "🤖   OPPONENT'S TURN!");
+        gameView.setDiceTurnIndicator(isPlayerTurn);  // ← flip the dice glow
     }
 
     private void navigateToWin(Monster winner) {
