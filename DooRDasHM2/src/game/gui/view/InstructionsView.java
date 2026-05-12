@@ -13,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+
 import java.io.InputStream;
 
 /**
@@ -200,6 +202,8 @@ public class InstructionsView extends BorderPane {
         hdr.setFont(loadFont(F_PIXEL, 10));
         hdr.setStyle("-fx-text-fill: " + GOLD + ";");
         hdr.setPadding(new Insets(0, 0, 8, 0));
+        hdr.setAlignment(Pos.CENTER); //does not want to be centered yooo
+        hdr.setTextAlignment(TextAlignment.CENTER);
 
         // 2-column GridPane — 10 items → 5 rows, no scrolling needed
         GridPane grid = new GridPane();
@@ -323,6 +327,8 @@ public class InstructionsView extends BorderPane {
     /** Fixed image path to match StartView: /resources/images/<name>.png */
     private ImageView safeImage(String name, double w, double h) {
         try {
+        	if (name == "energy")
+        		name = "card_cell";
             InputStream s = getClass().getResourceAsStream("/resources/images/" + name + ".png");
             if (s == null) return null;
             ImageView iv = new ImageView(new Image(s, w, h, false, true));
@@ -338,7 +344,7 @@ public class InstructionsView extends BorderPane {
     private String cellImageName(int i) {
         if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "conveyor";
         if (has(Constants.SOCK_CELL_INDICES,     i)) return "sock";
-        if (has(Constants.CARD_CELL_INDICES,     i)) return "energy";
+        if (has(Constants.CARD_CELL_INDICES,     i)) return "card_cell";
         if (has(Constants.MONSTER_CELL_INDICES,  i)) return "monster_cell";
         if (i % 2 == 1) return (i / 2) % 2 == 0 ? "scarer_door" : "laugher_door";
         return "metallic_hud_texture";

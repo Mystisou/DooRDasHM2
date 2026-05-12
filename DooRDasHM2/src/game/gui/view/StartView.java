@@ -5,6 +5,7 @@ import game.engine.Role;
 import game.gui.controller.GameController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -14,6 +15,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import java.io.InputStream;
 
 public class StartView extends VBox {
@@ -299,14 +305,10 @@ public class StartView extends VBox {
 
         btn.setOnAction(e -> {
             // ── ADD THIS BLOCK ───────────────────────────────────────────
-            if (selectedRole == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Choose Your Side");
-                alert.setHeaderText(null);
-                alert.setContentText("You must choose SCARER or LAUGHER\nbefore entering the Floor!");
-                alert.showAndWait();
-                return;   // stop here — don't navigate
-            }
+        	if (selectedRole == null) {
+        	    showChooseSidePopup();
+        	    return;
+        	}
             // ─────────────────────────────────────────────────────────────
             try {
                 ViewManager.updateView(new InstructionsView(selectedRole));
@@ -315,6 +317,64 @@ public class StartView extends VBox {
             }
         });
         return btn;
+    }
+    
+    private void showChooseSidePopup() {
+        Stage popup = new Stage();
+        popup.initStyle(StageStyle.TRANSPARENT);
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initModality(Modality.APPLICATION_MODAL); // blocks the main window
+        popup.setTitle("Choose Your Side");
+        popup.setResizable(false);
+
+        // ── Background image ──────────────────────────────────────────
+        ImageView bg = new ImageView();
+        InputStream bgStream = getClass().getResourceAsStream("/resources/images/start_popup.png");
+        if (bgStream != null) {
+            bg.setImage(new Image(bgStream));
+            bg.setFitWidth(420);
+            bg.setFitHeight(260);
+            bg.setPreserveRatio(false);
+            bg.setOpacity(0.25);   // dim it so text stays readable
+        }
+
+        // ── Content ───────────────────────────────────────────────────
+        Label title = new Label("CHOOSE YOUR SIDE!");
+        title.setFont(loadFont(F_BANGERS, 28));
+        title.setStyle("-fx-text-fill: " + GOLD + ";");
+
+        Label msg = new Label("You must pick SCARER or LAUGHER\nbefore entering the Floor.");
+        msg.setFont(loadFont(F_INTER, 13));
+        msg.setStyle("-fx-text-fill: #ecf0f1;");
+        msg.setAlignment(Pos.CENTER);
+        msg.setTextAlignment(TextAlignment.CENTER);
+
+        Button okBtn = new Button("GOT IT");
+        okBtn.setFont(loadFont(F_PIXEL, 10));
+        okBtn.setPrefSize(160, 42);
+        applyBtnStyle(okBtn, RED_BTN);
+        okBtn.setOnMouseEntered(e -> applyBtnStyle(okBtn, RED_HOVER));
+        okBtn.setOnMouseExited(e  -> applyBtnStyle(okBtn, RED_BTN));
+        okBtn.setOnAction(e -> popup.close());
+
+        VBox content = new VBox(14, title, msg, okBtn);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(30));
+
+        // ── Root — stack bg image under content ───────────────────────
+        StackPane root = new StackPane(bg, content);
+        root.setStyle(
+        	    "-fx-background-color: #0d0d1a;" +
+        	    "-fx-background-radius: 16;" +         
+        	    "-fx-border-color: rgba(155,89,182,0.60);" +
+        	    "-fx-border-radius: 16;" +
+        	    "-fx-border-width: 2;"
+        	);
+
+        Scene scene = new Scene(root, 420, 260);
+        scene.setFill(Color.TRANSPARENT);   // ← must be transparent for rounded corners to work
+        popup.setScene(scene);
+        popup.showAndWait();
     }
 
     private void applyBtnStyle(Button btn, String color) {
