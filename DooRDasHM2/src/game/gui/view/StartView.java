@@ -34,7 +34,7 @@ public class StartView extends VBox {
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-Regular.ttf";
 
-    private String selectedRole = "SCARER";
+    private String selectedRole = null; 
 
     public StartView() {
         this.setAlignment(Pos.CENTER);
@@ -168,9 +168,6 @@ public class StartView extends VBox {
             applyDeselectedStyle(scarerCard);
         });
 
-        applySelectedStyle(scarerCard, SCARER_BLUE);
-        applyDeselectedStyle(laugherCard);
-
         HBox row = new HBox(30, scarerCard, laugherCard);
         row.setAlignment(Pos.CENTER);
         return row;
@@ -301,8 +298,18 @@ public class StartView extends VBox {
         btn.setOnMouseExited(e  -> applyBtnStyle(btn, RED_BTN));
 
         btn.setOnAction(e -> {
+            // ── ADD THIS BLOCK ───────────────────────────────────────────
+            if (selectedRole == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Choose Your Side");
+                alert.setHeaderText(null);
+                alert.setContentText("You must choose SCARER or LAUGHER\nbefore entering the Floor!");
+                alert.showAndWait();
+                return;   // stop here — don't navigate
+            }
+            // ─────────────────────────────────────────────────────────────
             try {
-                ViewManager.updateView(new InstructionsView(selectedRole)); // ← was: new Game + GameView
+                ViewManager.updateView(new InstructionsView(selectedRole));
             } catch (Exception ex) {
                 errorLbl.setText("Failed to load: " + ex.getMessage());
             }
