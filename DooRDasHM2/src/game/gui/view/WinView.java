@@ -1,5 +1,6 @@
 package game.gui.view;
 
+import game.gui.ResourceLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -7,12 +8,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
-/**
- * VIEW — Game-over screen shown when a player wins.
- * Displays winner info, final energies, and a "Return to Start" button.
- */
 public class WinView extends VBox {
+
+    private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
+    private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
+    private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
     public WinView(String winnerName, String winnerRole, int winnerEnergy,
                    String loserName,  int loserEnergy) {
@@ -22,33 +24,34 @@ public class WinView extends VBox {
         this.setStyle("-fx-background-color: #1a252f;");
         this.setPadding(new Insets(60));
 
-        // Trophy + headline
         Label trophy = new Label("🏆");
         trophy.setStyle("-fx-font-size: 72px;");
 
         Label headline = new Label("GAME OVER!");
-        headline.setStyle("-fx-font-size: 38px; -fx-font-weight: bold; -fx-text-fill: #f1c40f;");
+        headline.setFont(font(F_BANGERS, 52));
+        headline.setStyle("-fx-text-fill: #f1c40f;");
 
-        // Winner announcement
         String roleColour = winnerRole.equals("SCARER") ? "#3498db" : "#2ecc71";
         Label winnerLbl = new Label(winnerName + " WINS!");
-        winnerLbl.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: " + roleColour + ";");
+        winnerLbl.setFont(font(F_BANGERS, 34));
+        winnerLbl.setStyle("-fx-text-fill: " + roleColour + ";");
 
         Label roleLbl = new Label("Role: " + winnerRole + "  |  Final Energy: " + winnerEnergy);
-        roleLbl.setStyle("-fx-font-size: 16px; -fx-text-fill: #bdc3c7;");
+        roleLbl.setFont(font(F_INTER, 14));
+        roleLbl.setStyle("-fx-text-fill: #bdc3c7;");
 
-        // Side-by-side final-energy cards
-        HBox cardsRow = new HBox(50, buildResultCard(winnerName, winnerEnergy, true),
-                                     buildResultCard(loserName,  loserEnergy,  false));
+        HBox cardsRow = new HBox(50,
+            buildResultCard(winnerName, winnerEnergy, true),
+            buildResultCard(loserName,  loserEnergy,  false));
         cardsRow.setAlignment(Pos.CENTER);
 
-        // Return button
         Button returnBtn = new Button("↩  Return to Start");
-        returnBtn.setPrefSize(200, 48);
+        returnBtn.setFont(font(F_PIXEL, 10));
+        returnBtn.setPrefSize(240, 48);
         returnBtn.setStyle(
             "-fx-background-color: #3498db; -fx-text-fill: white;" +
-            "-fx-font-size: 15px; -fx-font-weight: bold;" +
-            "-fx-background-radius: 10; -fx-cursor: hand;"
+            "-fx-background-radius: 10; -fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian,#3498db,14,0.5,0,0);"
         );
         returnBtn.setOnAction(e -> ViewManager.updateView(new StartView()));
 
@@ -56,15 +59,17 @@ public class WinView extends VBox {
     }
 
     private VBox buildResultCard(String name, int energy, boolean isWinner) {
-        Label nameLbl   = new Label(name);
-        nameLbl.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: "
-                + (isWinner ? "#f1c40f" : "#bdc3c7") + ";");
+        Label nameLbl = new Label(name);
+        nameLbl.setFont(font(F_BANGERS, 22));
+        nameLbl.setStyle("-fx-text-fill: " + (isWinner ? "#f1c40f" : "#bdc3c7") + ";");
 
         Label energyLbl = new Label("⚡ " + energy + " energy");
-        energyLbl.setStyle("-fx-font-size: 14px; -fx-text-fill: #2ecc71;");
+        energyLbl.setFont(font(F_INTER, 13));
+        energyLbl.setStyle("-fx-text-fill: #2ecc71;");
 
         Label badge = new Label(isWinner ? "🏆 WINNER" : "💀 DEFEATED");
-        badge.setStyle("-fx-font-size: 13px; -fx-text-fill: " + (isWinner ? "#f1c40f" : "#e74c3c") + ";");
+        badge.setFont(font(F_INTER, 12));
+        badge.setStyle("-fx-text-fill: " + (isWinner ? "#f1c40f" : "#e74c3c") + ";");
 
         VBox card = new VBox(7, nameLbl, energyLbl, badge);
         card.setAlignment(Pos.CENTER);
@@ -77,5 +82,9 @@ public class WinView extends VBox {
             "-fx-border-width: 1.5;"
         );
         return card;
+    }
+
+    private Font font(String path, double size) {
+        return ResourceLoader.font(path, size);
     }
 }

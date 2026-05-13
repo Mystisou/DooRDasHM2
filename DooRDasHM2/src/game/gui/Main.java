@@ -9,6 +9,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        ResourceLoader.preload();
         ViewManager.setStage(stage);
         stage.setTitle("DoorDasH");
         stage.show();

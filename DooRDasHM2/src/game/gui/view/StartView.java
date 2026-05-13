@@ -1,8 +1,6 @@
 package game.gui.view;
 
-import game.engine.Game;
-import game.engine.Role;
-import game.gui.controller.GameController;
+import game.gui.ResourceLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,17 +12,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.InputStream;
-
 public class StartView extends VBox {
 
-    // ── Palette ───────────────────────────────────────────────────────────────
     private static final String BG_DARK      = "#0d0d1a";
     private static final String BG_MID       = "#1a1a2e";
     private static final String PURPLE_LIGHT = "#9b59b6";
@@ -38,9 +32,9 @@ public class StartView extends VBox {
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
-    private static final String F_INTER   = "resources/fonts/Inter-Regular.ttf";
+    private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
-    private String selectedRole = null; 
+    private String selectedRole = null;
 
     public StartView() {
         this.setAlignment(Pos.CENTER);
@@ -49,44 +43,36 @@ public class StartView extends VBox {
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
 
         Label title = new Label("DooR DasH");
-        title.setFont(loadFont(F_BANGERS, 64));
+        title.setFont(font(F_BANGERS, 64));
         title.setStyle(
             "-fx-text-fill: " + GOLD + ";" +
             "-fx-effect: dropshadow(gaussian,#6c3483,16,0.6,0,0);"
         );
 
         Label titleSub = new Label("Scare  vs  Laugh  Touchdown");
-        titleSub.setFont(loadFont(F_PIXEL, 10));
+        titleSub.setFont(font(F_PIXEL, 10));
         titleSub.setStyle("-fx-text-fill: " + PURPLE_LIGHT + ";");
 
         VBox howToPlay = buildInstructionsBox();
 
         Label chooseLabel = new Label(" CHOOSE YOUR SIDE ");
-        chooseLabel.setFont(loadFont(F_PIXEL, 10));
+        chooseLabel.setFont(font(F_PIXEL, 10));
         chooseLabel.setStyle("-fx-text-fill: " + GOLD + ";");
 
         HBox sideCards = buildSideCards();
 
         Label errorLbl = new Label();
-        errorLbl.setFont(loadFont(F_INTER, 12));
+        errorLbl.setFont(font(F_INTER, 12));
         errorLbl.setStyle("-fx-text-fill: #e74c3c;");
 
         Button startBtn = buildEnterButton(errorLbl);
 
-        this.getChildren().addAll(
-            title, titleSub,
-            howToPlay,
-            chooseLabel, sideCards,
-            startBtn, errorLbl
-        );
+        this.getChildren().addAll(title, titleSub, howToPlay, chooseLabel, sideCards, startBtn, errorLbl);
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  HOW-TO-PLAY
-    // ═════════════════════════════════════════════════════════════════════════
     private VBox buildInstructionsBox() {
         Label header = new Label("HOW  TO  PLAY");
-        header.setFont(loadFont(F_PIXEL, 10));
+        header.setFont(font(F_PIXEL, 10));
         header.setStyle("-fx-text-fill: " + GOLD + ";");
 
         String[][] tips = {
@@ -124,18 +110,14 @@ public class StartView extends VBox {
     }
 
     private HBox buildTipCard(String icon, String text) {
-        // Gold-colored icon badge so it's always visible on dark background
         Label iconLbl = new Label(icon);
-        iconLbl.setFont(loadFont(F_INTER, 13));
-        iconLbl.setStyle(
-            "-fx-text-fill: " + GOLD + ";" +
-            "-fx-font-weight: bold;"
-        );
+        iconLbl.setFont(font(F_INTER, 13));
+        iconLbl.setStyle("-fx-text-fill: " + GOLD + "; -fx-font-weight: bold;");
         iconLbl.setMinWidth(22);
         iconLbl.setAlignment(Pos.CENTER);
 
         Label textLbl = new Label(text);
-        textLbl.setFont(loadFont(F_INTER, 11));
+        textLbl.setFont(font(F_INTER, 11));
         textLbl.setStyle("-fx-text-fill: " + TEXT_MAIN + ";");
         textLbl.setWrapText(true);
         textLbl.setMaxWidth(310);
@@ -151,17 +133,14 @@ public class StartView extends VBox {
         return card;
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  SIDE CARDS
-    // ═════════════════════════════════════════════════════════════════════════
     private HBox buildSideCards() {
-        VBox scarerCard  = buildRoleCard("", "SCARER",
+        VBox scarerCard  = buildRoleCard("SCARER",
             "Masters of fear. Drain opponents\nwith every step you take.",
-            SCARER_BLUE, "resources/images/scarer.png");
+            SCARER_BLUE, "scarer");
 
-        VBox laugherCard = buildRoleCard("", "LAUGHER",
+        VBox laugherCard = buildRoleCard("LAUGHER",
             "Joy is your weapon. Leave rivals\nlaughing and powerless.",
-            LAUGHER_GRN, "resources/images/laugher.png");
+            LAUGHER_GRN, "laugher");
 
         scarerCard.setOnMouseClicked(e -> {
             selectedRole = "SCARER";
@@ -179,10 +158,7 @@ public class StartView extends VBox {
         return row;
     }
 
-    private VBox buildRoleCard(String fallbackEmoji, String roleName,
-                               String desc, String accentColor, String imgPath) {
-
-        // ── Image area with CIRCULAR clip ────────────────────────────────────
+    private VBox buildRoleCard(String roleName, String desc, String accentColor, String imgKey) {
         StackPane imageArea = new StackPane();
         imageArea.setPrefSize(90, 90);
         imageArea.setStyle(
@@ -190,42 +166,36 @@ public class StartView extends VBox {
             "-fx-background-color: " + accentColor + "33;"
         );
 
-        InputStream imgStream = getClass().getResourceAsStream("/" + imgPath);
-        if (imgStream != null) {
-            try {
-            	ImageView iv = new ImageView(new Image(imgStream, 180, 180, true, true));
-                iv.setFitWidth(90);
-                iv.setFitHeight(90);
-                iv.setPreserveRatio(true);
-                iv.setSmooth(true);
-
-                // Circular clip — removes sharp edges
-                Circle clip = new Circle(45, 45, 45);
-                iv.setClip(clip);
-                iv.setEffect(new DropShadow(14, Color.web(accentColor, 0.55)));
-
-                imageArea.getChildren().add(iv);
-            } catch (Exception ex) {
-                imageArea.getChildren().add(emojiLabel(fallbackEmoji, accentColor, 52));
-            }
+        Image img = ResourceLoader.loadImage(imgKey, 180, 180);
+        if (img != null) {
+            ImageView iv = new ImageView(img);
+            iv.setFitWidth(90);
+            iv.setFitHeight(90);
+            iv.setPreserveRatio(true);
+            iv.setSmooth(true);
+            iv.setClip(new Circle(45, 45, 45));
+            iv.setEffect(new DropShadow(14, Color.web(accentColor, 0.55)));
+            imageArea.getChildren().add(iv);
         } else {
-            imageArea.getChildren().add(emojiLabel(fallbackEmoji, accentColor, 52));
+            Label fb = new Label(roleName.substring(0, 1));
+            fb.setFont(Font.font(52));
+            fb.setEffect(new DropShadow(20, Color.web(accentColor, 0.65)));
+            imageArea.getChildren().add(fb);
         }
 
-        // ── Role name (always white so it's readable on any highlight) ────────
         Label nameLabel = new Label(roleName);
-        nameLabel.setFont(loadFont(F_BANGERS, 26));
-        nameLabel.setStyle("-fx-text-fill: white;");   // white = readable always
+        nameLabel.setFont(font(F_BANGERS, 26));
+        nameLabel.setStyle("-fx-text-fill: white;");
 
         Label descLabel = new Label(desc);
-        descLabel.setFont(loadFont(F_INTER, 11));
+        descLabel.setFont(font(F_INTER, 11));
         descLabel.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-text-alignment: center;");
         descLabel.setAlignment(Pos.CENTER);
         descLabel.setWrapText(true);
         descLabel.setMaxWidth(170);
 
         Label tick = new Label("SELECTED");
-        tick.setFont(loadFont(F_PIXEL, 7));
+        tick.setFont(font(F_PIXEL, 7));
         tick.setStyle("-fx-text-fill: " + accentColor + ";");
         tick.setVisible(false);
         tick.setId("tick");
@@ -240,22 +210,10 @@ public class StartView extends VBox {
             "-fx-cursor: hand;"
         );
 
-        card.setOnMouseEntered(e -> {
-            if (!isSelected(card))
-                card.setStyle(card.getStyle().replace(BG_MID, "#1f1f38"));
-        });
-        card.setOnMouseExited(e -> {
-            if (!isSelected(card)) applyDeselectedStyle(card);
-        });
+        card.setOnMouseEntered(e -> { if (!isSelected(card)) card.setStyle(card.getStyle().replace(BG_MID, "#1f1f38")); });
+        card.setOnMouseExited(e  -> { if (!isSelected(card)) applyDeselectedStyle(card); });
 
         return card;
-    }
-
-    private Label emojiLabel(String emoji, String accentColor, double size) {
-        Label lbl = new Label(emoji);
-        lbl.setFont(Font.font(size));
-        lbl.setEffect(new DropShadow(20, Color.web(accentColor, 0.65)));
-        return lbl;
     }
 
     private boolean isSelected(VBox card) {
@@ -263,15 +221,14 @@ public class StartView extends VBox {
     }
 
     private void applySelectedStyle(VBox card, String color) {
-        // Subtle background (11% opacity), thin border, soft glow — not blinding
         card.setStyle(
-            "-fx-background-color: " + color + "1C;" +     // ~11% opacity
+            "-fx-background-color: " + color + "1C;" +
             "-fx-background-radius: 16;" +
-            "-fx-border-color: " + color + "BB;" +         // ~73% opacity border
+            "-fx-border-color: " + color + "BB;" +
             "-fx-border-radius: 16;" +
             "-fx-border-width: 2;" +
             "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian," + color + ",12,0.25,0,0);"  // subtle glow
+            "-fx-effect: dropshadow(gaussian," + color + ",12,0.25,0,0);"
         );
         card.getChildren().stream()
             .filter(n -> "tick".equals(n.getId()))
@@ -291,12 +248,9 @@ public class StartView extends VBox {
             .ifPresent(n -> n.setVisible(false));
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  ENTER BUTTON
-    // ═════════════════════════════════════════════════════════════════════════
     private Button buildEnterButton(Label errorLbl) {
         Button btn = new Button("START");
-        btn.setFont(loadFont(F_PIXEL, 11));
+        btn.setFont(font(F_PIXEL, 11));
         btn.setPrefSize(270, 46);
         applyBtnStyle(btn, RED_BTN);
 
@@ -304,12 +258,10 @@ public class StartView extends VBox {
         btn.setOnMouseExited(e  -> applyBtnStyle(btn, RED_BTN));
 
         btn.setOnAction(e -> {
-            // ── ADD THIS BLOCK ───────────────────────────────────────────
-        	if (selectedRole == null) {
-        	    showChooseSidePopup();
-        	    return;
-        	}
-            // ─────────────────────────────────────────────────────────────
+            if (selectedRole == null) {
+                showChooseSidePopup();
+                return;
+            }
             try {
                 ViewManager.updateView(new InstructionsView(selectedRole));
             } catch (Exception ex) {
@@ -318,39 +270,36 @@ public class StartView extends VBox {
         });
         return btn;
     }
-    
+
     private void showChooseSidePopup() {
         Stage popup = new Stage();
         popup.initStyle(StageStyle.TRANSPARENT);
         popup.initModality(Modality.APPLICATION_MODAL);
-        popup.initModality(Modality.APPLICATION_MODAL); // blocks the main window
         popup.setTitle("Choose Your Side");
         popup.setResizable(false);
 
-        // ── Background image ──────────────────────────────────────────
         ImageView bg = new ImageView();
-        InputStream bgStream = getClass().getResourceAsStream("/resources/images/start_popup.png");
-        if (bgStream != null) {
-            bg.setImage(new Image(bgStream));
+        Image bgImg = ResourceLoader.loadImage("start_popup", 420, 260);
+        if (bgImg != null) {
+            bg.setImage(bgImg);
             bg.setFitWidth(420);
             bg.setFitHeight(260);
             bg.setPreserveRatio(false);
-            bg.setOpacity(0.25);   // dim it so text stays readable
+            bg.setOpacity(0.25);
         }
 
-        // ── Content ───────────────────────────────────────────────────
         Label title = new Label("CHOOSE YOUR SIDE!");
-        title.setFont(loadFont(F_BANGERS, 28));
+        title.setFont(font(F_BANGERS, 28));
         title.setStyle("-fx-text-fill: " + GOLD + ";");
 
         Label msg = new Label("You must pick SCARER or LAUGHER\nbefore entering the Floor.");
-        msg.setFont(loadFont(F_INTER, 13));
+        msg.setFont(font(F_INTER, 13));
         msg.setStyle("-fx-text-fill: #ecf0f1;");
         msg.setAlignment(Pos.CENTER);
         msg.setTextAlignment(TextAlignment.CENTER);
 
         Button okBtn = new Button("GOT IT");
-        okBtn.setFont(loadFont(F_PIXEL, 10));
+        okBtn.setFont(font(F_PIXEL, 10));
         okBtn.setPrefSize(160, 42);
         applyBtnStyle(okBtn, RED_BTN);
         okBtn.setOnMouseEntered(e -> applyBtnStyle(okBtn, RED_HOVER));
@@ -361,18 +310,17 @@ public class StartView extends VBox {
         content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(30));
 
-        // ── Root — stack bg image under content ───────────────────────
         StackPane root = new StackPane(bg, content);
         root.setStyle(
-        	    "-fx-background-color: #0d0d1a;" +
-        	    "-fx-background-radius: 16;" +         
-        	    "-fx-border-color: rgba(155,89,182,0.60);" +
-        	    "-fx-border-radius: 16;" +
-        	    "-fx-border-width: 2;"
-        	);
+            "-fx-background-color: #0d0d1a;" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-color: rgba(155,89,182,0.60);" +
+            "-fx-border-radius: 16;" +
+            "-fx-border-width: 2;"
+        );
 
         Scene scene = new Scene(root, 420, 260);
-        scene.setFill(Color.TRANSPARENT);   // ← must be transparent for rounded corners to work
+        scene.setFill(Color.TRANSPARENT);
         popup.setScene(scene);
         popup.showAndWait();
     }
@@ -387,17 +335,7 @@ public class StartView extends VBox {
         );
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  FONT LOADER
-    // ═════════════════════════════════════════════════════════════════════════
-    private Font loadFont(String resourcePath, double size) {
-        try {
-            InputStream stream = getClass().getResourceAsStream("/" + resourcePath);
-            if (stream != null) {
-                Font f = Font.loadFont(stream, size);
-                if (f != null) return f;
-            }
-        } catch (Exception ignored) {}
-        return Font.font("System", FontWeight.BOLD, size);
+    private Font font(String path, double size) {
+        return ResourceLoader.font(path, size);
     }
 }

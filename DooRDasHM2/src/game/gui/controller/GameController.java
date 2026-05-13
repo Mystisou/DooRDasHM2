@@ -10,14 +10,6 @@ import game.gui.view.GameView;
 import game.gui.view.ViewManager;
 import game.gui.view.WinView;
 
-/**
- * CONTROLLER — wires the Game engine to the GameView.
- *
- * Responsibilities:
- *  - Attach action handlers to the Roll and Power buttons.
- *  - After each engine call, pull new state and push it to the View.
- *  - Never contain any game rules; never build any UI widgets.
- */
 public class GameController {
 
     private final Game     game;
@@ -26,24 +18,21 @@ public class GameController {
     public GameController(Game game, GameView gameView) {
         this.game     = game;
         this.gameView = gameView;
-
         initializeView();
         setupHandlers();
     }
 
-    // ── Initial paint ────────────────────────────────────────────────
-
     private void initializeView() {
-        // Place tokens at cell 0
         gameView.movePlayer(game.getPlayer()  .getPosition(), true);
         gameView.movePlayer(game.getOpponent().getPosition(), false);
 
-        // Label every door cell with its energy value
-        for (int i = 1; i < 100; i += 2) {          // doors are at odd indices
+        gameView.setPlayerPhoto(true,  game.getPlayer()  .getName(), game.getPlayer()  .getOriginalRole().toString());
+        gameView.setPlayerPhoto(false, game.getOpponent().getName(), game.getOpponent().getOriginalRole().toString());
+
+        for (int i = 1; i < 100; i += 2) {
             Cell cell = game.getBoard().getCell(i);
             if (cell instanceof DoorCell) {
-                DoorCell door = (DoorCell) cell;
-                gameView.setDoorEnergyLabel(i, door.getEnergy());
+                gameView.setDoorEnergyLabel(i, ((DoorCell) cell).getEnergy());
             }
         }
 
@@ -51,10 +40,8 @@ public class GameController {
         updateTurnLog();
     }
 
-    // ── Button handlers ──────────────────────────────────────────────
-
     private void setupHandlers() {
-        gameView.getDiceImageView().setOnMouseClicked(e -> handleRoll()); // ← was getRollBtn()
+        gameView.getDiceImageView().setOnMouseClicked(e -> handleRoll());
         gameView.getPowerBtn().setOnAction(e -> handlePower());
     }
 
@@ -63,7 +50,7 @@ public class GameController {
         boolean wasFrozen = current.isFrozen();
 
         try {
-            game.playTurn();                  // may throw InvalidMoveException
+            game.playTurn();
         } catch (InvalidMoveException ex) {
             gameView.showAlert(
                 "Cell Occupied!",
@@ -72,7 +59,6 @@ public class GameController {
             return;
         }
 
-        // Always sync positions and stats after a successful turn
         gameView.movePlayer(game.getPlayer()  .getPosition(), true);
         gameView.movePlayer(game.getOpponent().getPosition(), false);
         refreshStats();
@@ -83,7 +69,6 @@ public class GameController {
             gameView.showDiceResult(game.getLastRoll());
         }
 
-        // Check exhausted doors and grey them out
         for (int i = 1; i < 100; i += 2) {
             Cell cell = game.getBoard().getCell(i);
             if (cell instanceof DoorCell && ((DoorCell) cell).isActivated()) {
@@ -91,7 +76,6 @@ public class GameController {
             }
         }
 
-        // Check win condition
         Monster winner = game.getWinner();
         if (winner != null) {
             navigateToWin(winner);
@@ -115,39 +99,27 @@ public class GameController {
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────
-
     private void refreshStats() {
         Monster p = game.getPlayer();
         Monster o = game.getOpponent();
 
         gameView.updateMonsterCard(
             true,
-            p.getName(),
-            p.getOriginalRole().toString(),
-            p.getRole().toString(),
-            p.getClass().getSimpleName(),
-            p.getEnergy(),
-            p.getPosition(),
-            buildStatus(p)
+            p.getName(), p.getOriginalRole().toString(), p.getRole().toString(),
+            p.getClass().getSimpleName(), p.getEnergy(), p.getPosition(), buildStatus(p)
         );
         gameView.updateMonsterCard(
             false,
-            o.getName(),
-            o.getOriginalRole().toString(),
-            o.getRole().toString(),
-            o.getClass().getSimpleName(),
-            o.getEnergy(),
-            o.getPosition(),
-            buildStatus(o)
+            o.getName(), o.getOriginalRole().toString(), o.getRole().toString(),
+            o.getClass().getSimpleName(), o.getEnergy(), o.getPosition(), buildStatus(o)
         );
     }
 
     private String buildStatus(Monster m) {
         StringBuilder sb = new StringBuilder();
-        if (m.isShielded())  sb.append("🛡 Shield  ");
-        if (m.isConfused())  sb.append("😵 Confused(").append(m.getConfusionTurns()).append(")  ");
-        if (m.isFrozen())    sb.append("❄ Frozen  ");
+        if (m.isShielded()) sb.append("🛡 Shield  ");
+        if (m.isConfused()) sb.append("😵 Confused(").append(m.getConfusionTurns()).append(")  ");
+        if (m.isFrozen())   sb.append("❄ Frozen  ");
         if (sb.length() == 0) sb.append("✅ Normal");
         return sb.toString().trim();
     }
@@ -155,18 +127,17 @@ public class GameController {
     private void updateTurnLog() {
         boolean isPlayerTurn = game.getCurrent() == game.getPlayer();
         gameView.updateLog(isPlayerTurn ? "⚔   YOUR TURN!" : "🤖   OPPONENT'S TURN!");
-        gameView.setDiceTurnIndicator(isPlayerTurn);  // ← flip the dice glow
+        gameView.setDiceTurnIndicator(isPlayerTurn);
     }
 
     private void navigateToWin(Monster winner) {
-        Monster player   = game.getPlayer();
+        Monster player  = game.getPlayer();
         Monster opponent = game.getOpponent();
-        Monster loser    = (winner == player) ? opponent : player;
+        Monster loser   = (winner == player) ? opponent : player;
 
-        WinView winView = new WinView(
+        ViewManager.updateView(new WinView(
             winner.getName(), winner.getRole().toString(), winner.getEnergy(),
             loser.getName(),  loser.getEnergy()
-        );
-        ViewManager.updateView(winView);
+        ));
     }
 }
