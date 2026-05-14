@@ -10,6 +10,7 @@ import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
 public class GameView extends BorderPane {
@@ -30,6 +31,7 @@ public class GameView extends BorderPane {
     private ImageView diceImageView;
     private StackPane diceWrapper;
     private Label     diceLabel;
+    private Label     cardsRemainingLabel;
 
     private GridPane    gameBoard;
     private StackPane[] cells = new StackPane[100];
@@ -290,7 +292,18 @@ public class GameView extends BorderPane {
             "-fx-padding: 8 18;"
         );
 
-        HBox bottom = new HBox(26, powerBtn, diceLabel, diceWrapper);
+        cardsRemainingLabel = new Label("🃏  25 cards");
+        cardsRemainingLabel.setFont(font(F_INTER, 12));
+        cardsRemainingLabel.setStyle(
+            "-fx-text-fill: " + TEXT_DIM + ";" +
+            "-fx-background-color: rgba(108,52,131,0.18);" +
+            "-fx-background-radius: 8;" +
+            "-fx-border-color: rgba(155,89,182,0.45);" +
+            "-fx-border-radius: 8;" +
+            "-fx-border-width: 1.5;" +
+            "-fx-padding: 5 10;"
+        );
+        HBox bottom = new HBox(16, powerBtn, diceLabel, diceWrapper, cardsRemainingLabel);
         bottom.setAlignment(Pos.CENTER);
         bottom.setPadding(new Insets(12, 0, 8, 0));
         bottom.setStyle(
@@ -313,6 +326,12 @@ public class GameView extends BorderPane {
 
     public void movePlayer(int newPos, boolean isCurrentPlayer) {
         StackPane token = isCurrentPlayer ? playerToken : opponentToken;
+
+        // Guard: if the token is already in the target cell, do nothing.
+        // Removing then re-adding to the same StackPane causes a brief visual
+        // flicker that looks like a "slide" — skipping it prevents that.
+        if (token.getParent() == cells[newPos]) return;
+
         if (token.getParent() instanceof StackPane) {
             ((StackPane) token.getParent()).getChildren().remove(token);
         }
@@ -339,10 +358,58 @@ public class GameView extends BorderPane {
         or_.setText("Role:   " + origRole);
         cr .setText("Active: " + curRole + (confused ? "  CONFUSED" : ""));
         cr .setStyle("-fx-text-fill: " + (confused ? "#e74c3c" : TEXT_DIM) + "; -fx-font-size: 12px;");
+        setConfusionBorder(isPlayer, confused);
         tp .setText("Type:   " + type);
         en .setText("Energy: " + energy);
         ps .setText("Cell:   " + position);
         st .setText("Status: " + status);
+    }
+
+    /**
+     * Applies an orange glow border + 😵 badge to the photo pane when the
+     * monster is confused, and restores the normal accent border when it clears.
+     * Called from updateMonsterCard() so it always stays in sync with the engine state.
+     */
+    private void setConfusionBorder(boolean isPlayer, boolean confused) {
+        StackPane pane        = isPlayer ? p1PhotoPane : p2PhotoPane;
+        String    accent      = isPlayer ? "#00bcd4"   : "#e91e63";
+        String    confColor   = "#f39c12";
+
+        if (confused) {
+            pane.setStyle(
+                "-fx-background-color: " + BG_DARK + ";" +
+                "-fx-background-radius: 36;" +
+                "-fx-border-color: " + confColor + ";" +
+                "-fx-border-width: 3;" +
+                "-fx-border-radius: 36;" +
+                "-fx-effect: dropshadow(gaussian," + confColor + ",18,0.55,0,0);"
+            );
+            // Guard: only add the badge once; id prevents duplicates on every refresh
+            boolean hasOverlay = pane.getChildren().stream()
+                .anyMatch(n -> "confusion_badge".equals(n.getId()));
+            if (!hasOverlay) {
+                Label badge = new Label("😵");
+                badge.setId("confusion_badge");
+                badge.setStyle(
+                    "-fx-font-size: 15px;" +
+                    "-fx-background-color: rgba(0,0,0,0.65);" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-padding: 1 3;"
+                );
+                StackPane.setAlignment(badge, Pos.TOP_RIGHT);
+                StackPane.setMargin(badge, new Insets(2, 2, 0, 0));
+                pane.getChildren().add(badge);
+            }
+        } else {
+            pane.setStyle(
+                "-fx-background-color: " + BG_DARK + ";" +
+                "-fx-background-radius: 36;" +
+                "-fx-border-color: " + accent + "BB;" +
+                "-fx-border-width: 2.5;" +
+                "-fx-border-radius: 36;"
+            );
+            pane.getChildren().removeIf(n -> "confusion_badge".equals(n.getId()));
+        }
     }
 
     public void setPlayerPhoto(boolean isPlayer, String monsterName, String role) {
@@ -386,15 +453,49 @@ public class GameView extends BorderPane {
         cells[index].getChildren().add(enLbl);
     }
 
-    public void markDoorExhausted(int index) {
+    /**
+     * Adds a small name badge to a Monster Cell so players can see which
+     * monster is stationed there without hovering or guessing.
+     */
+    public void addMonsterNameLabel(int cellIndex, String monsterName) {
+        if (cellIndex < 0 || cellIndex >= 100) return;
+        Label lbl = new Label(monsterName);
+        lbl.setFont(font(F_INTER, 8));
+        lbl.setStyle(
+            "-fx-text-fill: white;" +
+            "-fx-background-color: rgba(0,0,0,0.72);" +
+            "-fx-background-radius: 3;" +
+            "-fx-padding: 1 3;"
+        );
+        lbl.setWrapText(false);
+        StackPane.setAlignment(lbl, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(lbl, new Insets(0, 0, 2, 2));
+        cells[cellIndex].getChildren().add(lbl);
+    }
+
+    /**
+     * Marks a door cell as activated (one-time use consumed).
+     * Replaces the door background image and removes the energy label so the
+     * cell clearly shows it has already been used.
+     * Called at most once per door thanks to the activatedDoors guard in the controller.
+     */
+    public void markDoorActivated(int index) {
         if (index < 0 || index >= 100) return;
         StackPane cell = cells[index];
+
+        // 1. Swap background image (always sits at index 0)
         if (!cell.getChildren().isEmpty() && cell.getChildren().get(0) instanceof ImageView) {
             cell.getChildren().remove(0);
         }
-        ImageView ex = imageView("exhausted_door", 53, 53);
-        if (ex != null) cell.getChildren().add(0, ex);
-        else            cell.setStyle("-fx-background-color: #4a4a4a; -fx-opacity: 0.55;");
+        ImageView used = imageView("exhausted_door", 53, 53);
+        if (used != null) cell.getChildren().add(0, used);
+        else              cell.setStyle("-fx-background-color: #7f8c8d; -fx-border-color: rgba(0,0,0,0.35); -fx-border-width: 0.5;");
+
+        // 2. Remove the energy value label (added by setDoorEnergyLabel at BOTTOM_RIGHT)
+        cell.getChildren().removeIf(node ->
+            node instanceof Label &&
+            Pos.BOTTOM_RIGHT.equals(StackPane.getAlignment(node))
+        );
     }
 
     public void showDiceResult(int roll) {
@@ -474,6 +575,105 @@ public class GameView extends BorderPane {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         popup.setScene(scene);
         popup.showAndWait();
+    }
+
+    /** Updates the card-pile counter in the bottom bar. */
+    public void updateCardPileCount(int remaining) {
+        cardsRemainingLabel.setText("🃏  " + remaining + " card" + (remaining == 1 ? "" : "s"));
+    }
+
+    /**
+     * Resets the dice label to a context-appropriate prompt at the start of each turn.
+     * Called by setTurnState() so the label never shows a stale roll from a previous turn.
+     */
+    public void resetDiceLabel(boolean isPlayerTurn) {
+        diceLabel.setText(isPlayerTurn ? "🎲  Your roll!" : "🎲  Roll for opponent");
+    }
+
+    /**
+     * Dedicated styled popup for a freeze skip — blocks until the player clicks OK
+     * so the turn-skip cannot be missed. More prominent than a plain log update.
+     */
+    public void showFreezeSkip(String monsterName) {
+        javafx.stage.Stage popup = new javafx.stage.Stage();
+        popup.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        popup.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+        popup.setResizable(false);
+
+        Label icon = new Label("❄");
+        icon.setStyle("-fx-font-size: 48px;");
+
+        Label title = new Label("Turn Frozen!");
+        title.setFont(font(F_BANGERS, 30));
+        title.setStyle("-fx-text-fill: #74b9ff;");
+
+        Label msg = new Label(monsterName + " is FROZEN and cannot move.\nTheir entire turn is skipped.");
+        msg.setFont(font(F_INTER, 13));
+        msg.setStyle("-fx-text-fill: #ecf0f1;");
+        msg.setWrapText(true);
+        msg.setMaxWidth(320);
+        msg.setAlignment(Pos.CENTER);
+        msg.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        Button okBtn = new Button("OK");
+        okBtn.setFont(font(F_PIXEL, 9));
+        okBtn.setPrefSize(120, 38);
+        okBtn.setStyle(
+            "-fx-background-color: #0984e3;" +
+            "-fx-text-fill: white;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian,#0984e3,12,0.5,0,0);"
+        );
+        okBtn.setOnMouseEntered(e -> okBtn.setStyle(
+            "-fx-background-color: #74b9ff;" +
+            "-fx-text-fill: white;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;"
+        ));
+        okBtn.setOnMouseExited(e -> okBtn.setStyle(
+            "-fx-background-color: #0984e3;" +
+            "-fx-text-fill: white;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;" +
+            "-fx-effect: dropshadow(gaussian,#0984e3,12,0.5,0,0);"
+        ));
+        okBtn.setOnAction(e -> popup.close());
+
+        VBox content = new VBox(12, icon, title, msg, okBtn);
+        content.setAlignment(Pos.CENTER);
+        content.setPadding(new Insets(28, 32, 28, 32));
+
+        Rectangle clip = new Rectangle(380, 260);
+        clip.setArcWidth(24);
+        clip.setArcHeight(24);
+
+        StackPane root = new StackPane(content);
+        root.setClip(clip);
+        root.setStyle(
+            "-fx-background-color: #0d0d1a;" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-color: rgba(116,185,255,0.60);" +
+            "-fx-border-radius: 16;" +
+            "-fx-border-width: 2;" +
+            "-fx-effect: dropshadow(gaussian,#0984e3,22,0.35,0,0);"
+        );
+
+        javafx.scene.Scene scene = new javafx.scene.Scene(root, 380, 260);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        popup.setScene(scene);
+        popup.showAndWait();
+    }
+
+    /**
+     * Enables or disables the power button depending on whose turn it is.
+     * The power-up can only be activated on the human player's own turn —
+     * disabling it during the opponent's turn prevents wrong-turn actions
+     * and avoids InvalidTurnException being thrown by the engine.
+     */
+    public void setPowerEnabled(boolean enabled) {
+        powerBtn.setDisable(!enabled);
+        powerBtn.setOpacity(enabled ? 1.0 : 0.45);
     }
 
     public Button    getPowerBtn()      { return powerBtn;      }

@@ -9,7 +9,7 @@ import game.gui.view.ViewManager;
 public final class GameLauncher {
 
     public static void launch(String role) throws Exception {
-        Game     game     = new Game(Role.valueOf(role));
+        Game game = new Game(Role.valueOf(role));
         GameView gameView = new GameView();
         new GameController(game, gameView);
         ViewManager.updateView(gameView);
