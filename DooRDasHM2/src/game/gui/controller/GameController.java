@@ -23,6 +23,8 @@ import game.gui.view.popups.CardPopup;
 
 import java.util.ArrayList;
 
+import javafx.scene.input.KeyCode;
+
 public class GameController {
 
     private final Game     game;
@@ -73,6 +75,40 @@ public class GameController {
     private void setupHandlers() {
         gameView.getDiceImageView().setOnMouseClicked(e -> handleRoll());
         gameView.getPowerBtn().setOnAction(e -> handlePower());
+
+        // Debug key bindings - attach once the node has a scene
+        gameView.getDiceImageView().sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnKeyPressed(e -> handleDebugKey(e.getCode()));
+            }
+        });
+    }
+
+    // -- debug shortcuts ----------------------------------------------------------
+
+    /**
+     * DEBUG ONLY - not part of normal gameplay.
+     *   W  ->  teleport the human player to cell 99
+     *   E  ->  set the human player's energy to 1000
+     */
+    private void handleDebugKey(KeyCode code) {
+        Monster player = game.getCurrent();
+        boolean isPlayer = false;
+        if(player==game.getPlayer())
+        	isPlayer = true;
+        if (code == KeyCode.W) {
+            player.setPosition(Constants.WINNING_POSITION);
+            gameView.movePlayer(player.getPosition(), isPlayer);
+            refreshStats();
+            if(player.getEnergy()>=1000)
+            	navigateToWin(player);
+            	
+        } else if (code == KeyCode.E) {
+            player.setEnergy(Constants.WINNING_ENERGY);
+            refreshStats();
+            if(player.getPosition()==99)
+            	navigateToWin(player);
+        }
     }
 
     // ── turn handling ────────────────────────────────────────────────────────

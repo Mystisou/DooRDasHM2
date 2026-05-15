@@ -162,7 +162,7 @@ public class Board {
 				currentMonster.decrementConfusion();
 				opponentMonster.decrementConfusion();
 			}
-		}
+		}		
 	}
 
 	private void updateMonsterPositions(Monster player, Monster opponent) {
