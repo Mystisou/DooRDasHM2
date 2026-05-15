@@ -1,7 +1,6 @@
 package game.gui.view;
 
 import game.engine.Constants;
-import game.gui.GameLauncher;
 import game.gui.ResourceLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,6 +12,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * Instructions / board-preview screen shown before the game starts.
+ * Pure UI — no game logic. InstructionsController wires the start button.
+ */
 public class InstructionsView extends BorderPane {
 
     private static final String BG_DARK      = "#0d0d1a";
@@ -27,15 +30,18 @@ public class InstructionsView extends BorderPane {
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
-    private final String selectedRole;
     private Button startBtn;
 
     public InstructionsView(String role) {
-        this.selectedRole = role;
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
         this.setPadding(new Insets(8, 14, 0, 14));
         buildUI();
     }
+
+    /** Exposed so InstructionsController can wire the action handler. */
+    public Button getStartButton() { return startBtn; }
+
+    // ── private UI builders ──────────────────────────────────────────────────
 
     private void buildUI() {
         Label title = new Label("DooR DasH");
@@ -84,18 +90,7 @@ public class InstructionsView extends BorderPane {
         applyBtnStyle(startBtn, RED_BTN);
         startBtn.setOnMouseEntered(e -> applyBtnStyle(startBtn, RED_HOVER));
         startBtn.setOnMouseExited(e  -> applyBtnStyle(startBtn, RED_BTN));
-        startBtn.setOnAction(e -> {
-            try {
-                GameLauncher.launch(selectedRole);
-            } catch (Exception ex) {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.ERROR);
-                alert.setTitle("Failed to Start");
-                alert.setHeaderText(null);
-                alert.setContentText("Could not load game data:\n" + ex.getMessage());
-                alert.showAndWait();
-            }
-        });
+        // action is wired by InstructionsController
 
         HBox bottom = new HBox(startBtn);
         bottom.setAlignment(Pos.CENTER);
@@ -160,7 +155,6 @@ public class InstructionsView extends BorderPane {
 
         if (i == 0)  addBadge(cell, "START", "#16a085");
         if (i == 99) addBadge(cell, "END",   "#f39c12");
-
         return cell;
     }
 
@@ -185,10 +179,8 @@ public class InstructionsView extends BorderPane {
         grid.setHgap(10);
         grid.setVgap(8);
 
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(50);
-        ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(50);
+        ColumnConstraints col1 = new ColumnConstraints(); col1.setPercentWidth(50);
+        ColumnConstraints col2 = new ColumnConstraints(); col2.setPercentWidth(50);
         grid.getColumnConstraints().addAll(col1, col2);
 
         String[][] entries = {
@@ -204,9 +196,8 @@ public class InstructionsView extends BorderPane {
             {"freeze",         "Freeze",         "Skip your\nnext turn."},
         };
 
-        for (int i = 0; i < entries.length; i++) {
+        for (int i = 0; i < entries.length; i++)
             grid.add(buildDescRow(entries[i][0], entries[i][1], entries[i][2]), i % 2, i / 2);
-        }
 
         VBox panel = new VBox(10, hdr, grid);
         panel.setPadding(new Insets(14));
@@ -226,19 +217,12 @@ public class InstructionsView extends BorderPane {
 
     private HBox buildDescRow(String imgName, String name, String desc) {
         StackPane imgBox = new StackPane();
-        imgBox.setMinSize(40, 40);
-        imgBox.setPrefSize(40, 40);
-        imgBox.setMaxSize(40, 40);
+        imgBox.setMinSize(40, 40); imgBox.setPrefSize(40, 40); imgBox.setMaxSize(40, 40);
         imgBox.setStyle("-fx-background-color: " + BG_MID + "; -fx-background-radius: 8;");
 
         ImageView iv = imageView(imgName, 34, 34);
-        if (iv != null) {
-            imgBox.getChildren().add(iv);
-        } else {
-            Circle c = new Circle(17);
-            c.setFill(Color.web("#3d5166"));
-            imgBox.getChildren().add(c);
-        }
+        if (iv != null) imgBox.getChildren().add(iv);
+        else { Circle c = new Circle(17); c.setFill(Color.web("#3d5166")); imgBox.getChildren().add(c); }
 
         Label nameLbl = new Label(name);
         nameLbl.setFont(font(F_BANGERS, 17));
@@ -256,10 +240,7 @@ public class InstructionsView extends BorderPane {
         HBox row = new HBox(8, imgBox, textBox);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(6, 8, 6, 8));
-        row.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.04);" +
-            "-fx-background-radius: 8;"
-        );
+        row.setStyle("-fx-background-color: rgba(255,255,255,0.04); -fx-background-radius: 8;");
         return row;
     }
 
@@ -276,10 +257,7 @@ public class InstructionsView extends BorderPane {
     private ImageView imageView(String name, double w, double h) {
         Image img = ResourceLoader.loadImage(name, w, h);
         if (img == null) return null;
-        ImageView iv = new ImageView(img);
-        iv.setFitWidth(w);
-        iv.setFitHeight(h);
-        iv.setPreserveRatio(false);
+        ImageView iv = new ImageView(img); iv.setFitWidth(w); iv.setFitHeight(h); iv.setPreserveRatio(false);
         return iv;
     }
 
@@ -293,23 +271,15 @@ public class InstructionsView extends BorderPane {
     }
 
     private String fallbackColour(int i) {
-        if (i == 0)  return "#16a085";
-        if (i == 99) return "#f39c12";
+        if (i == 0)  return "#16a085"; if (i == 99) return "#f39c12";
         if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "#27ae60";
         if (has(Constants.SOCK_CELL_INDICES,     i)) return "#d35400";
         if (has(Constants.CARD_CELL_INDICES,     i)) return "#c0392b";
         if (has(Constants.MONSTER_CELL_INDICES,  i)) return "#8e44ad";
         if (i % 2 == 1) return (i / 2) % 2 == 0 ? "#2980b9" : "#1abc9c";
-        int row = i / 10, col = i % 10;
-        return (row + col) % 2 == 0 ? "#2c3e50" : "#34495e";
+        return (i / 10 + i % 10) % 2 == 0 ? "#2c3e50" : "#34495e";
     }
 
-    private Font font(String path, double size) {
-        return ResourceLoader.font(path, size);
-    }
-
-    private boolean has(int[] arr, int val) {
-        for (int v : arr) if (v == val) return true;
-        return false;
-    }
+    private Font font(String path, double size) { return ResourceLoader.font(path, size); }
+    private boolean has(int[] arr, int val) { for (int v : arr) if (v == val) return true; return false; }
 }

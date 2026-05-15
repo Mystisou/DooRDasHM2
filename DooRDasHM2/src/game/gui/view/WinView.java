@@ -10,11 +10,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+/**
+ * Game-won screen.
+ * Pure UI — no navigation logic.
+ * GameController wires getReturnButton() to navigate back to StartView.
+ */
 public class WinView extends VBox {
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
+
+    private final Button returnBtn;
 
     public WinView(String winnerName, String winnerRole, int winnerEnergy,
                    String loserName,  int loserEnergy) {
@@ -24,7 +31,7 @@ public class WinView extends VBox {
         this.setStyle("-fx-background-color: #1a252f;");
         this.setPadding(new Insets(60));
 
-        Label trophy = new Label("🏆");
+        Label trophy   = new Label("🏆");
         trophy.setStyle("-fx-font-size: 72px;");
 
         Label headline = new Label("GAME OVER!");
@@ -45,7 +52,7 @@ public class WinView extends VBox {
             buildResultCard(loserName,  loserEnergy,  false));
         cardsRow.setAlignment(Pos.CENTER);
 
-        Button returnBtn = new Button("↩  Return to Start");
+        returnBtn = new Button("↩  Return to Start");
         returnBtn.setFont(font(F_PIXEL, 10));
         returnBtn.setPrefSize(240, 48);
         returnBtn.setStyle(
@@ -53,13 +60,16 @@ public class WinView extends VBox {
             "-fx-background-radius: 10; -fx-cursor: hand;" +
             "-fx-effect: dropshadow(gaussian,#3498db,14,0.5,0,0);"
         );
-        returnBtn.setOnAction(e -> ViewManager.updateView(new StartView()));
+        // action wired by GameController
 
         this.getChildren().addAll(trophy, headline, new Separator(), winnerLbl, roleLbl, cardsRow, returnBtn);
     }
 
+    /** Exposed so GameController can wire the "return to start" navigation. */
+    public Button getReturnButton() { return returnBtn; }
+
     private VBox buildResultCard(String name, int energy, boolean isWinner) {
-        Label nameLbl = new Label(name);
+        Label nameLbl   = new Label(name);
         nameLbl.setFont(font(F_BANGERS, 22));
         nameLbl.setStyle("-fx-text-fill: " + (isWinner ? "#f1c40f" : "#bdc3c7") + ";");
 
@@ -67,7 +77,7 @@ public class WinView extends VBox {
         energyLbl.setFont(font(F_INTER, 13));
         energyLbl.setStyle("-fx-text-fill: #2ecc71;");
 
-        Label badge = new Label(isWinner ? "🏆 WINNER" : "💀 DEFEATED");
+        Label badge     = new Label(isWinner ? "🏆 WINNER" : "💀 DEFEATED");
         badge.setFont(font(F_INTER, 12));
         badge.setStyle("-fx-text-fill: " + (isWinner ? "#f1c40f" : "#e74c3c") + ";");
 
@@ -84,7 +94,5 @@ public class WinView extends VBox {
         return card;
     }
 
-    private Font font(String path, double size) {
-        return ResourceLoader.font(path, size);
-    }
+    private Font font(String path, double size) { return ResourceLoader.font(path, size); }
 }

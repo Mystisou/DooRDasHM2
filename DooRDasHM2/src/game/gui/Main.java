@@ -1,10 +1,11 @@
 package game.gui;
 
+import game.gui.controller.StartController;
 import game.gui.view.StartView;
 import game.gui.view.ViewManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import game.gui.view.LossView;
+
 public class Main extends Application {
 
     @Override
@@ -13,7 +14,10 @@ public class Main extends Application {
         ViewManager.setStage(stage);
         stage.setTitle("DoorDasH");
         stage.show();
-        ViewManager.updateView(new StartView());
+
+        StartView sv = new StartView();
+        new StartController(sv);          // controller wires all button logic
+        ViewManager.updateView(sv);
     }
 
     public static void main(String[] args) {
