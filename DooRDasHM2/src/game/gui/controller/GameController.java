@@ -17,7 +17,6 @@ import game.engine.monsters.Monster;
 import game.engine.monsters.MultiTasker;
 import game.gui.view.GameView;
 import game.gui.view.ViewManager;
-import game.gui.view.LossView;
 import game.gui.view.WinView;
 import game.gui.view.popups.CardPopup;
 
@@ -206,11 +205,7 @@ public class GameController {
         // ── win check ─────────────────────────────────────────────────────────
         Monster winner = game.getWinner();
         if (winner != null) {
-            if (winner == game.getPlayer()) {
-                navigateToWin(winner);
-            } else {
-                navigateToLoss(winner);
-            }
+            navigateToWin(winner);
             return;
         }
 
@@ -342,14 +337,6 @@ public class GameController {
         ViewManager.updateView(new WinView(
             winner.getName(), winner.getRole().toString(), winner.getEnergy(),
             loser.getName(),  loser.getEnergy()
-        ));
-    }
-
-    private void navigateToLoss(Monster winner) {
-        Monster player = game.getPlayer();
-        ViewManager.updateView(new LossView(
-            player.getName(), player.getRole().toString(), player.getEnergy(),
-            winner.getName(), winner.getRole().toString(), winner.getEnergy()
         ));
     }
 }
