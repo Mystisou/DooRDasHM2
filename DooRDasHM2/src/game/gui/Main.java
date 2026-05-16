@@ -12,7 +12,13 @@ import java.util.logging.Logger;
 public class Main extends Application {
 
     static {
-        Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(Level.SEVERE);
+        // Silence JavaFX 8 Modena CSS lookup warnings.
+        // setUseParentHandlers(false) is the key — without it the WARNING
+        // propagates to the root logger's handlers even though the named
+        // logger's own level is set to SEVERE.
+        Logger cssLog = Logger.getLogger("javafx.scene.CssStyleHelper");
+        cssLog.setLevel(Level.SEVERE);
+        cssLog.setUseParentHandlers(false);
     }
 
     @Override

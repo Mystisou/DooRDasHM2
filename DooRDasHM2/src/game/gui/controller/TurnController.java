@@ -80,15 +80,33 @@ public class TurnController {
         // ── animate tokens, then finish turn ─────────────────────────────────
         view.clearEventText();
 
-        view.movePlayer(player  .getPosition(), true,  () ->
+        // Capture locals for the lambda
+        final boolean  _isPlayer          = isPlayer;
+        final boolean  _wasFrozen         = wasFrozen;
+        final int      _playerEnergyBefore  = playerEnergyBefore;
+        final int      _opponentEnergyBefore= opponentEnergyBefore;
+        final boolean  _wasPlayerShielded   = wasPlayerShielded;
+        final boolean  _wasOpponentShielded = wasOpponentShielded;
+        final int      _posBefore           = posBefore;
+        final int      _momentumBefore      = momentumBefore;
+        final int      _normalSpeedBefore   = normalSpeedBefore;
+        final ArrayList<Card> _deckSnapshot = deckSnapshot;
+        final Monster  _player   = player;
+        final Monster  _opponent = opponent;
+        final Monster  _current  = current;
+
+        view.movePlayer(player.getPosition(), true,  () ->
         view.movePlayer(opponent.getPosition(), false, () ->
-            finishTurn(
-                roll, isPlayer, wasFrozen,
-                playerEnergyBefore, opponentEnergyBefore,
-                wasPlayerShielded, wasOpponentShielded,
-                posBefore, momentumBefore, normalSpeedBefore,
-                deckSnapshot, player, opponent, current
-            )
+            // Platform.runLater moves finishTurn OUT of the animation pulse.
+            // Without this, popup.showAndWait() throws "Nested event loops are
+            // allowed only while handling system events" in JavaFX 8.
+            javafx.application.Platform.runLater(() -> finishTurn(
+                roll, _isPlayer, _wasFrozen,
+                _playerEnergyBefore, _opponentEnergyBefore,
+                _wasPlayerShielded, _wasOpponentShielded,
+                _posBefore, _momentumBefore, _normalSpeedBefore,
+                _deckSnapshot, _player, _opponent, _current
+            ))
         ));
     }
 
