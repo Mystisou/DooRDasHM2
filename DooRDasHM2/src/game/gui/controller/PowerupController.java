@@ -25,6 +25,7 @@ public class PowerupController {
         String name = game.getCurrent().getName();
         try {
             game.usePowerup();
+
             gameCtrl.refreshStats();
             boolean isPlayerTurn = (game.getCurrent() == game.getPlayer());
             gameCtrl.setTurnState(

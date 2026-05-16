@@ -12,10 +12,6 @@ import java.util.logging.Logger;
 public class Main extends Application {
 
     static {
-        // JavaFX 8 Modena theme looks up -fx-text-box-border and
-        // -fx-text-background-color on every label/separator even when
-        // those variables aren't defined on custom-styled roots.
-        // These are harmless but spam the console — silence them.
         Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(Level.SEVERE);
     }
 

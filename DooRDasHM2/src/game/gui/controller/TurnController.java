@@ -48,6 +48,7 @@ public class TurnController {
         // Clear the previous roll's number as soon as a new roll starts
         view.resetDiceLabel(isPlayer);
 
+
         // pre-turn snapshots
         ArrayList<Card> deckSnapshot    = new ArrayList<>(Board.cards);
         int   playerEnergyBefore        = player  .getEnergy();
@@ -116,6 +117,7 @@ public class TurnController {
             int opponentDelta = opponent.getEnergy() - opponentEnergyBefore;
             if (playerDelta   != 0) view.showEnergyDelta(true,  playerDelta);
             if (opponentDelta != 0) view.showEnergyDelta(false, opponentDelta);
+
 
             int effectiveRoll = cellCtrl.computeEffectiveRoll(current, roll, momentumBefore, normalSpeedBefore);
             int rolledPos     = (posBefore + effectiveRoll) % Constants.BOARD_SIZE;

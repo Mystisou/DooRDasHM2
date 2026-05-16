@@ -30,12 +30,8 @@ public class ViewManager {
         StackPane.setMargin(closeBtn, new Insets(15, 15, 0, 0));
 
         if (ViewStage.getScene() == null) {
-            // First call: create the scene at fixed size.
-            // Stage stays RESIZABLE so the user can maximise/minimise normally.
             ViewStage.setScene(new Scene(root, W, H));
         } else {
-            // All subsequent navigations: ONLY swap the root.
-            // Never touch width/height → zero visible resize flicker.
             ViewStage.getScene().setRoot(root);
         }
     }

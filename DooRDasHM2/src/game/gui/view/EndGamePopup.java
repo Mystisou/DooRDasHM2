@@ -70,18 +70,6 @@ public final class EndGamePopup {
         if (owner != null) popup.initOwner(owner);
         popup.setResizable(false);
 
-        // ── watermark background image (crown / skull) ────────────────────────
-        String bgKey = playerWon ? "crown" : "skull";
-        StackPane watermark = new StackPane();
-        Image bgImg = ResourceLoader.loadImage(bgKey, 240, 240);
-        if (bgImg != null) {
-            ImageView bgIv = new ImageView(bgImg);
-            bgIv.setFitWidth(240); bgIv.setFitHeight(240);
-            bgIv.setOpacity(0.09);
-            watermark.getChildren().add(bgIv);
-        }
-        watermark.setMaxSize(W, H);
-
         // ── title ─────────────────────────────────────────────────────────────
         String titleText  = playerWon ? "YOU WON!" : "YOU LOST!";
         String titleColor = playerWon ? GOLD : RED;
@@ -142,7 +130,7 @@ public final class EndGamePopup {
         String borderColor = playerWon ? "rgba(241,196,15,0.60)" : "rgba(231,76,60,0.50)";
         String glowColor   = playerWon ? GOLD : RED;
 
-        StackPane root = new StackPane(watermark, content);
+        StackPane root = new StackPane(content);
         root.setClip(clip);
         root.setStyle(
             "-fx-background-color: " + BG + ";" +

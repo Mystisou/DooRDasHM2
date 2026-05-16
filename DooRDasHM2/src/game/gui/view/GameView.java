@@ -196,24 +196,50 @@ public class GameView extends BorderPane {
         VBox cellList = new VBox(5);
         for (String[] ct : cellTypes) cellList.getChildren().add(qc(ct[0], ct[1], ct[2]));
 
-        Region cellSep = new Region(); cellSep.setPrefHeight(1); cellSep.setMaxWidth(Double.MAX_VALUE);
-        cellSep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
+        Region sep1 = new Region(); sep1.setPrefHeight(1); sep1.setMaxWidth(Double.MAX_VALUE);
+        sep1.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
 
-        // ── Game Rules ────────────────────────────────────────────────────────
+        // ── Buttons ───────────────────────────────────────────────────────────
+        Label btnHdr = new Label("BUTTONS");
+        btnHdr.setFont(font(F_BANGERS, 20));
+        btnHdr.setStyle("-fx-text-fill: " + GOLD + ";");
+
+        VBox btnList = new VBox(5,
+            qcRound("dice",   "Roll Dice",   "Click to roll and move your monster forward."),
+            qcRound("energy", "Power-Up",    "Click to activate your monster's power (costs 500 energy).")
+        );
+
+        // ── Power-Up details (bullet points) ─────────────────────────────────
+        Label powHdr = new Label("POWER-UPS");
+        powHdr.setFont(font(F_BANGERS, 20));
+        powHdr.setStyle("-fx-text-fill: " + GOLD + ";");
+
+        String[][] powers = {
+            {"Dasher",       "3x movement speed for 3 turns (replaces the default 2x)."},
+            {"Dynamo",       "Freezes the opponent — they skip their next full turn."},
+            {"Multitasker",  "Move at normal speed (not halved) for 2 turns."},
+            {"Schemer",      "Steals 10 energy from every other monster on the board."},
+        };
+        VBox powList = new VBox(5);
+        for (String[] p : powers) powList.getChildren().add(qbullet(p[0], p[1]));
+
+        Region sep2 = new Region(); sep2.setPrefHeight(1); sep2.setMaxWidth(Double.MAX_VALUE);
+        sep2.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
+
+        // ── Quick Rules ───────────────────────────────────────────────────────
         Label rulesHdr = new Label("QUICK RULES");
         rulesHdr.setFont(font(F_BANGERS, 20));
         rulesHdr.setStyle("-fx-text-fill: " + GOLD + ";");
 
         content.getChildren().addAll(
-            cellHdr, cellList, cellSep, rulesHdr,
+            cellHdr, cellList, sep1,
+            btnHdr, btnList, powHdr, powList, sep2,
+            rulesHdr,
             qs("The Goal",       "Reach Cell 99 with 1,000+ energy to win."),
             qs("Your Turn",      "Optionally activate powerup (costs 500 energy), then roll and move."),
             qs("Occupied Cell",  "Can't land on your opponent — roll again."),
             qs("Shield",         "Blocks next energy loss for your team. Schemer's steal ignores it."),
-            qs("Confusion",      "Roles flip for a few turns — wrong doors will hurt you!"),
-            qs("Powerups",
-               "Dasher: 3x speed 3 turns  |  Dynamo: freeze opponent  |  " +
-               "Multitasker: normal speed 2 turns  |  Schemer: steal from everyone")
+            qs("Confusion",      "Roles flip for a few turns — wrong doors will hurt you!")
         );
 
         ScrollPane scroll = new ScrollPane(content);
@@ -245,6 +271,48 @@ public class GameView extends BorderPane {
 
         popup.setScene(new javafx.scene.Scene(root, 520, 640) {{ setFill(Color.TRANSPARENT); }});
         popup.showAndWait();
+    }
+
+    /** Bullet-point row: coloured type name + description (no image). Used for powerups. */
+    private HBox qbullet(String typeName, String desc) {
+        Label bullet = new Label("•");
+        bullet.setFont(font(F_BANGERS, 20));
+        bullet.setStyle("-fx-text-fill: " + GOLD + "; -fx-min-width: 16;");
+
+        Label t = new Label(typeName);
+        t.setFont(font(F_BANGERS, 16));
+        t.setStyle("-fx-text-fill: white; -fx-min-width: 100;");
+
+        Label d = new Label(desc);
+        d.setFont(font(F_INTER, 11));
+        d.setStyle("-fx-text-fill: #95a5a6;");
+        d.setWrapText(true);
+        d.setMaxWidth(270);
+
+        HBox row = new HBox(8, bullet, t, d);
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        row.setPadding(new Insets(3, 8, 3, 12));
+        return row;
+    }
+
+    /** Like qc() but with a circular image — used for the Buttons section. */
+    private HBox qcRound(String imgKey, String name, String desc) {
+        javafx.scene.image.Image img = ResourceLoader.loadImage(imgKey, 32, 32);
+        javafx.scene.layout.StackPane imgBox = new javafx.scene.layout.StackPane();
+        imgBox.setMinSize(34, 34); imgBox.setMaxSize(34, 34);
+        imgBox.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 17;");
+        if (img != null) {
+            ImageView iv = new ImageView(img); iv.setFitWidth(30); iv.setFitHeight(30);
+            iv.setClip(new javafx.scene.shape.Circle(15, 15, 15));
+            imgBox.getChildren().add(iv);
+        }
+        Label t = new Label(name); t.setFont(font(F_BANGERS, 15)); t.setStyle("-fx-text-fill: white; -fx-min-width: 100;");
+        Label d = new Label(desc); d.setFont(font(F_INTER, 11)); d.setStyle("-fx-text-fill: #95a5a6;"); d.setWrapText(true);
+        d.setMaxWidth(280);
+        HBox row = new HBox(8, imgBox, t, d); row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        row.setPadding(new Insets(4, 8, 4, 8));
+        row.setStyle("-fx-background-color: rgba(255,255,255,0.04); -fx-background-radius: 8;");
+        return row;
     }
 
     /** Cell-type row for the review popup: small image + name + one-line description. */
