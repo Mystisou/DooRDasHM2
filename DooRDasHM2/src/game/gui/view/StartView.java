@@ -237,7 +237,8 @@ public class StartView extends VBox {
         gotItBtn.setOnAction(e -> popup.close());
 
         HBox btnRow = new HBox(gotItBtn); btnRow.setAlignment(Pos.CENTER); btnRow.setPadding(new Insets(14, 0, 4, 0));
-        Separator sep = new Separator(); sep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
+        Region sep = new Region(); sep.setPrefHeight(1); sep.setMaxWidth(Double.MAX_VALUE);
+        sep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
 
         VBox outer = new VBox(10, header, sep, scroll, btnRow);
         outer.setPadding(new Insets(28, 28, 24, 28));

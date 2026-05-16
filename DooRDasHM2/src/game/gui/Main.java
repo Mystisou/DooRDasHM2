@@ -6,7 +6,18 @@ import game.gui.view.ViewManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Main extends Application {
+
+    static {
+        // JavaFX 8 Modena theme looks up -fx-text-box-border and
+        // -fx-text-background-color on every label/separator even when
+        // those variables aren't defined on custom-styled roots.
+        // These are harmless but spam the console — silence them.
+        Logger.getLogger("javafx.scene.CssStyleHelper").setLevel(Level.SEVERE);
+    }
 
     @Override
     public void start(Stage stage) {
@@ -16,7 +27,7 @@ public class Main extends Application {
         stage.show();
 
         StartView sv = new StartView();
-        new StartController(sv);          // controller wires all button logic
+        new StartController(sv);
         ViewManager.updateView(sv);
     }
 

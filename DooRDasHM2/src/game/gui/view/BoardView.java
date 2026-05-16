@@ -210,10 +210,25 @@ public class BoardView extends StackPane {
         if (outOfRange(cellIdx)) return;
         StackPane cell = cells[cellIdx];
         cell.getChildren().removeIf(n -> "type-overlay".equals(n.getId()));
-        StackPane op = buildOverlay(monsterName, cellIdx);
+        String imgKey = monsterNameToImageKey(monsterName);
+        StackPane op = buildOverlay(imgKey, cellIdx);
         op.setId("type-overlay");
-        // insert after the base tile (index 1)
-        cell.getChildren().add(1, op);
+        // insert after base tile; guard against empty children list
+        int insertAt = cell.getChildren().isEmpty() ? 0 : 1;
+        cell.getChildren().add(insertAt, op);
+    }
+
+    /** Converts a full monster name (e.g. "James P. Sullivan") to the image file key. */
+    private String monsterNameToImageKey(String name) {
+        if (name.contains("Sullivan"))   return "James_Sullivan";
+        if (name.contains("Wazowski"))   return "Mike_Wazowski";
+        if (name.contains("Randall"))    return "Randall_Boggs";
+        if (name.contains("Celia"))      return "Celia_Mae";
+        if (name.contains("Waternoose")) return "Henry_Waternoose";
+        if (name.contains("Roz"))        return "Roz";
+        if (name.contains("Fungus"))     return "Fungus";
+        if (name.contains("Yeti"))       return "Yeti";
+        return name; // fallback: use as-is
     }
 
     private StackPane buildOverlay(String imgKey, int cellIndex) {

@@ -5,8 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -62,7 +62,11 @@ public class WinView extends VBox {
         );
         // action wired by GameController
 
-        this.getChildren().addAll(trophy, headline, new Separator(), winnerLbl, roleLbl, cardsRow, returnBtn);
+        Region divider = new Region();
+        divider.setPrefHeight(1); divider.setMaxWidth(400);
+        divider.setStyle("-fx-background-color: rgba(155,89,182,0.35);");
+
+        this.getChildren().addAll(trophy, headline, divider, winnerLbl, roleLbl, cardsRow, returnBtn);
     }
 
     /** Exposed so GameController can wire the "return to start" navigation. */

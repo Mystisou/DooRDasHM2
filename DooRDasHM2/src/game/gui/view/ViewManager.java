@@ -29,21 +29,28 @@ public class ViewManager {
         StackPane.setAlignment(globalCloseBtn, Pos.TOP_RIGHT);
         StackPane.setMargin(globalCloseBtn, new Insets(15, 15, 0, 0));
 
-        // Use screen visual bounds so the window always fits on screen
+        boolean wasMaximized = ViewStage.isMaximized();
+
+        // Compute a sensible default size (used when not maximized)
         Rectangle2D screen = Screen.getPrimary().getVisualBounds();
-        double w = Math.min(1280, screen.getWidth()  * 0.96);
-        double h = Math.min(900,  screen.getHeight() * 0.94);
+        double w = Math.min(1100, screen.getWidth()  * 0.90);
+        double h = Math.min(860,  screen.getHeight() * 0.94);
 
         if (ViewStage.getScene() == null) {
             ViewStage.setScene(new Scene(rootWrapper, w, h));
+            ViewStage.setX(screen.getMinX() + (screen.getWidth()  - w) / 2.0);
+            ViewStage.setY(screen.getMinY() + (screen.getHeight() - h) / 2.0);
         } else {
+            // Un-maximize briefly so we can resize, then restore
+            if (wasMaximized) ViewStage.setMaximized(false);
             ViewStage.getScene().setRoot(rootWrapper);
-            ViewStage.setWidth(w);
-            ViewStage.setHeight(h);
+            if (!wasMaximized) {
+                ViewStage.setWidth(w);
+                ViewStage.setHeight(h);
+                ViewStage.setX(screen.getMinX() + (screen.getWidth()  - w) / 2.0);
+                ViewStage.setY(screen.getMinY() + (screen.getHeight() - h) / 2.0);
+            }
+            if (wasMaximized) ViewStage.setMaximized(true);
         }
-
-        // Centre the stage on screen
-        ViewStage.setX(screen.getMinX() + (screen.getWidth()  - w) / 2.0);
-        ViewStage.setY(screen.getMinY() + (screen.getHeight() - h) / 2.0);
     }
 }

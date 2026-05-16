@@ -7,10 +7,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -121,7 +122,7 @@ public final class CardPopup {
         gotItBtn.setOnMouseExited(e  -> gotItBtn.setStyle(btnBase));
         gotItBtn.setOnAction(e -> popup.getScene().getWindow().hide());
 
-        Separator sep = new Separator(); sep.setMaxWidth(320);
+        Region sep = new Region(); sep.setPrefHeight(1); sep.setMaxWidth(320);
         sep.setStyle("-fx-background-color: rgba(255,255,255,0.12);");
 
         VBox content = new VBox(12, drawnLbl, imgPane, rarityBadge, titleLbl, sep, descLbl, gotItBtn);

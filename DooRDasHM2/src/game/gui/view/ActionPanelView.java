@@ -51,11 +51,11 @@ public class ActionPanelView extends HBox {
     // ── public update API ────────────────────────────────────────────────────
 
     public void showDiceResult(int roll) {
-        diceResultLbl.setText("Rolled: " + roll);
+        diceResultLbl.setText(String.valueOf(roll));
     }
 
     public void resetDiceLabel(boolean isPlayerTurn) {
-        diceResultLbl.setText(isPlayerTurn ? "Roll!" : "Opp.");
+        diceResultLbl.setText("—");
     }
 
     public void updateCardPileCount(int remaining) {
@@ -87,28 +87,29 @@ public class ActionPanelView extends HBox {
     // ── layout ───────────────────────────────────────────────────────────────
 
     private void build() {
-        // Left: power button with photo
+        // Left: power button
         StackPane powerPane = buildPowerButton();
 
-        // Centre: event result text
+        // Centre: event result text (grows to fill space)
         eventTextLbl = new Label("");
         eventTextLbl.setFont(font(F_INTER, 13));
         eventTextLbl.setStyle("-fx-text-fill: " + GOLD + ";");
         eventTextLbl.setWrapText(true);
-        eventTextLbl.setMaxWidth(260);
+        eventTextLbl.setMaxWidth(240);
         eventTextLbl.setAlignment(Pos.CENTER);
         eventTextLbl.setTextAlignment(TextAlignment.CENTER);
         HBox centre = new HBox(eventTextLbl);
         centre.setAlignment(Pos.CENTER);
         HBox.setHgrow(centre, Priority.ALWAYS);
 
-        // Right column: dice result + cards remaining
+        // Right: stacked — [small: dice image + cards count] on top,
+        //                   [big: roll result number] on bottom
         VBox rightCol = buildRightColumn();
 
         this.getChildren().addAll(powerPane, centre, rightCol);
         this.setAlignment(Pos.CENTER);
-        this.setSpacing(16);
-        this.setPadding(new Insets(10, 14, 10, 14));
+        this.setSpacing(14);
+        this.setPadding(new Insets(8, 12, 8, 12));
         this.setStyle(
             "-fx-background-color: " + BG_DARK + ";" +
             "-fx-border-color: rgba(155,89,182,0.30) transparent transparent transparent;" +
@@ -116,53 +117,58 @@ public class ActionPanelView extends HBox {
         );
     }
 
-    /** Two small info boxes stacked vertically: dice result on top, cards remaining below. */
     private VBox buildRightColumn() {
-        // dice result box
-        diceResultLbl = new Label("Roll!");
-        diceResultLbl.setFont(font(F_BANGERS, 18));
-        diceResultLbl.setStyle("-fx-text-fill: " + GOLD + ";");
-
-        // clickable dice image (acts as the roll trigger)
-        Image diceImg = ResourceLoader.loadImage("dice", 48, 48);
+        // ── Top box: clickable dice image + "Cards: N" ──────────────────────
+        Image diceImg = ResourceLoader.loadImage("dice", 40, 40);
         diceClickTarget = (diceImg != null) ? new ImageView(diceImg) : new ImageView();
-        diceClickTarget.setFitWidth(48); diceClickTarget.setFitHeight(48);
-        Circle diceClip = new Circle(24, 24, 24);
-        diceClickTarget.setClip(diceClip);
+        diceClickTarget.setFitWidth(40); diceClickTarget.setFitHeight(40);
+        diceClickTarget.setClip(new Circle(20, 20, 20));
         diceClickTarget.setStyle("-fx-cursor: hand;");
 
-        HBox diceBox = new HBox(8, diceClickTarget, diceResultLbl);
-        diceBox.setAlignment(Pos.CENTER_LEFT);
-        diceBox.setPadding(new Insets(6, 10, 6, 10));
-        diceBox.setStyle(
-            "-fx-background-color: rgba(108,52,131,0.20);" +
+        cardsRemainingLbl = new Label("25");
+        cardsRemainingLbl.setFont(font(F_BANGERS, 20));
+        cardsRemainingLbl.setStyle("-fx-text-fill: " + GOLD + ";");
+
+        Label cardsTitle = new Label("Cards");
+        cardsTitle.setFont(font(F_INTER, 10));
+        cardsTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.75;");
+
+        VBox cardsLblBox = new VBox(0, cardsRemainingLbl, cardsTitle);
+        cardsLblBox.setAlignment(Pos.CENTER_LEFT);
+
+        HBox topBox = new HBox(10, diceClickTarget, cardsLblBox);
+        topBox.setAlignment(Pos.CENTER_LEFT);
+        topBox.setPadding(new Insets(5, 10, 5, 10));
+        topBox.setStyle(
+            "-fx-background-color: rgba(108,52,131,0.18);" +
             "-fx-background-radius: 8;" +
             "-fx-border-color: rgba(155,89,182,0.40);" +
             "-fx-border-radius: 8;" +
             "-fx-border-width: 1;"
         );
 
-        // cards remaining box
-        cardsRemainingLbl = new Label("25");
-        cardsRemainingLbl.setFont(font(F_BANGERS, 16));
-        cardsRemainingLbl.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
+        // ── Bottom box: big rolled number display ────────────────────────────
+        diceResultLbl = new Label("—");
+        diceResultLbl.setFont(font(F_BANGERS, 44));
+        diceResultLbl.setStyle("-fx-text-fill: " + GOLD + ";");
+        diceResultLbl.setAlignment(Pos.CENTER);
 
-        Label cardsTitle = new Label("Cards left");
-        cardsTitle.setFont(font(F_INTER, 10));
-        cardsTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.7;");
+        Label rollTitle = new Label("ROLLED");
+        rollTitle.setFont(font(F_PIXEL, 7));
+        rollTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.7;");
 
-        HBox cardsBox = new HBox(8, cardsRemainingLbl, cardsTitle);
-        cardsBox.setAlignment(Pos.CENTER_LEFT);
-        cardsBox.setPadding(new Insets(5, 10, 5, 10));
-        cardsBox.setStyle(
-            "-fx-background-color: rgba(108,52,131,0.12);" +
-            "-fx-background-radius: 8;" +
-            "-fx-border-color: rgba(155,89,182,0.25);" +
-            "-fx-border-radius: 8;" +
-            "-fx-border-width: 1;"
+        VBox bottomBox = new VBox(2, rollTitle, diceResultLbl);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(8, 18, 8, 18));
+        bottomBox.setStyle(
+            "-fx-background-color: rgba(108,52,131,0.25);" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: rgba(155,89,182,0.55);" +
+            "-fx-border-radius: 10;" +
+            "-fx-border-width: 1.5;"
         );
 
-        VBox col = new VBox(6, diceBox, cardsBox);
+        VBox col = new VBox(6, topBox, bottomBox);
         col.setAlignment(Pos.CENTER_LEFT);
         return col;
     }

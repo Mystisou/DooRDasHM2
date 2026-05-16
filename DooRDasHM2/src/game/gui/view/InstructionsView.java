@@ -215,14 +215,10 @@ public class InstructionsView extends BorderPane {
         String[][] entries = {
             {"red_door",            "Scarer Door",    "Scarers gain energy;\nLaughers lose it."},
             {"purple_door",         "Laugher Door",   "Laughers gain energy;\nScarers lose it."},
-            {"exhausted_door",      "Exhausted Door", "Already used —\nno energy effect."},
             {"James_Sullivan",      "Monster Cell",   "Same role: free powerup.\nOpposite: energy swap."},
             {"Conveyor_Belts",      "Conveyor Belt",  "Jump forward\nby belt amount."},
             {"Contamination_Socks", "Sock",           "Move back + lose\n100 energy."},
             {"Card_Cell",           "Card Cell",      "Draw a mystery\ncard!"},
-            {"shield",              "Shield",         "Blocks next negative\nenergy effect."},
-            {"Mind_Scramble",       "Confusion",      "Roles swapped\nfor N turns."},
-            {"freeze",              "Freeze",         "Skip your\nnext turn."},
         };
 
         for (int i = 0; i < entries.length; i++)

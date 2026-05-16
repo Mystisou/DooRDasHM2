@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -51,14 +50,18 @@ public class GameView extends BorderPane {
         opponentPanel = new MonsterPanelView(false);
         actionPanel   = new ActionPanelView();
 
-        BorderPane.setMargin(playerPanel,   new Insets(0, 12, 0, 0));
-        BorderPane.setMargin(opponentPanel, new Insets(0, 0, 0, 12));
+        BorderPane.setMargin(playerPanel,   new Insets(0, 8, 0, 0));
+        BorderPane.setMargin(opponentPanel, new Insets(0, 0, 0, 8));
 
-        this.setTop(logView);
+        // Center column: log on top, board in middle, action panel on bottom
+        // This makes all three the same width, matching the board exactly.
+        VBox centerCol = new VBox(4, logView, boardView, actionPanel);
+        VBox.setVgrow(boardView, Priority.ALWAYS);
+        centerCol.setAlignment(Pos.TOP_CENTER);
+
         this.setLeft(playerPanel);
         this.setRight(opponentPanel);
-        this.setCenter(boardView);
-        this.setBottom(actionPanel);
+        this.setCenter(centerCol);
 
         // Wire the Review Rules button in LogView
         logView.getReviewButton().setOnAction(e -> showReviewPopup());
@@ -207,7 +210,8 @@ public class GameView extends BorderPane {
         closeBtn.setOnAction(e -> popup.close());
         HBox btnRow = new HBox(closeBtn); btnRow.setAlignment(Pos.CENTER); btnRow.setPadding(new Insets(12,0,2,0));
 
-        Separator sep = new Separator(); sep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
+        Region sep = new Region(); sep.setPrefHeight(1); sep.setMaxWidth(Double.MAX_VALUE);
+        sep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
         VBox outer = new VBox(10, header, sep, scroll, btnRow);
         outer.setPadding(new Insets(24, 24, 20, 24));
 

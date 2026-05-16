@@ -73,7 +73,7 @@ public class LogView extends HBox {
 
         this.getChildren().addAll(logLabel, reviewBtn);
         this.setAlignment(Pos.CENTER_LEFT);
-        this.setPadding(new Insets(4, 8, 8, 8));
+        this.setPadding(new Insets(4, 56, 8, 8));  // extra right pad to clear the X button
         this.setSpacing(10);
     }
 

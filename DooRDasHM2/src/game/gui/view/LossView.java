@@ -5,8 +5,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -66,7 +66,11 @@ public class LossView extends VBox {
         );
         // action wired by GameController
 
-        this.getChildren().addAll(skull, headline, new Separator(), subLbl, roleLbl, winnerAnnounceLbl, cardsRow, returnBtn);
+        Region divider = new Region();
+        divider.setPrefHeight(1); divider.setMaxWidth(400);
+        divider.setStyle("-fx-background-color: rgba(231,76,60,0.40);");
+
+        this.getChildren().addAll(skull, headline, divider, subLbl, roleLbl, winnerAnnounceLbl, cardsRow, returnBtn);
     }
 
     /** Exposed so GameController can wire the "return to start" navigation. */

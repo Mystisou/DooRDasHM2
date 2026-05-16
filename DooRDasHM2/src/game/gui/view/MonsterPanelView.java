@@ -4,12 +4,12 @@ import game.gui.ResourceLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -127,8 +127,12 @@ public class MonsterPanelView extends VBox {
         // energy bar
         StackPane energyBar = buildEnergyBar();
 
+        Region divider = new Region();
+        divider.setPrefHeight(1); divider.setMaxWidth(Double.MAX_VALUE);
+        divider.setStyle("-fx-background-color: rgba(155,89,182,0.35);");
+
         this.getChildren().addAll(
-            topRow, new Separator(),
+            topRow, divider,
             nm, origRole, curRole, type,
             energyLbl, energyBar, deltaLbl,
             pos, status
