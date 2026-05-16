@@ -138,17 +138,27 @@ public class InstructionsView extends BorderPane {
         cell.setMinSize(49, 49);
         cell.setMaxSize(49, 49);
 
-        ImageView bg = imageView(cellImageName(i), 49, 49);
-        if (bg != null) {
-            cell.getChildren().add(bg);
-        } else {
-            cell.setStyle("-fx-background-color: " + fallbackColour(i)
-                + "; -fx-border-color: rgba(0,0,0,0.3); -fx-border-width: 0.5;");
+        // 1. base tile (same as BoardView)
+        ImageView base = imageView("normal_tile", 49, 49);
+        if (base != null) cell.getChildren().add(base);
+        else cell.setStyle("-fx-background-color: " + fallbackColour(i) + ";");
+
+        // 2. cell-type overlay image (exact same keys as BoardView)
+        String overlayKey = overlayImageKey(i);
+        if (overlayKey != null) {
+            ImageView ov = imageView(overlayKey, 36, 36);
+            if (ov != null) {
+                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(36, 36);
+                clip.setArcWidth(8); clip.setArcHeight(8);
+                ov.setClip(clip);
+                cell.getChildren().add(ov);
+            }
         }
 
+        // 3. index number
         Label num = new Label(String.valueOf(i));
-        num.setFont(font(F_INTER, 11));
-        num.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        num.setFont(font(F_INTER, 9));
+        num.setStyle("-fx-text-fill: rgba(255,255,255,0.85); -fx-font-weight: bold;");
         StackPane.setAlignment(num, Pos.TOP_LEFT);
         StackPane.setMargin(num, new Insets(2, 0, 0, 2));
         cell.getChildren().add(num);
@@ -156,6 +166,24 @@ public class InstructionsView extends BorderPane {
         if (i == 0)  addBadge(cell, "START", "#16a085");
         if (i == 99) addBadge(cell, "END",   "#f39c12");
         return cell;
+    }
+
+    /** Returns the overlay image key for a cell (mirrors BoardView.overlayImageKey). */
+    private String overlayImageKey(int i) {
+        if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "Conveyor_Belts";
+        if (has(Constants.SOCK_CELL_INDICES,     i)) return "Contamination_Socks";
+        if (has(Constants.CARD_CELL_INDICES,     i)) return "Card_Cell";
+        if (has(Constants.MONSTER_CELL_INDICES,  i)) return monsterImgForCellIndex(i);
+        if (i % 2 == 1) return (i / 2) % 2 == 0 ? "red_door" : "purple_door";
+        return null;
+    }
+
+    private String monsterImgForCellIndex(int cellIndex) {
+        String[] imgs = { "James_Sullivan","Mike_Wazowski","Randall_Boggs","Celia_Mae","Roz","Fungus" };
+        int[] monsterCells = Constants.MONSTER_CELL_INDICES;
+        for (int k = 0; k < monsterCells.length; k++)
+            if (monsterCells[k] == cellIndex) return imgs[k % imgs.length];
+        return "James_Sullivan";
     }
 
     private void addBadge(StackPane cell, String text, String bg) {
@@ -173,6 +201,7 @@ public class InstructionsView extends BorderPane {
         hdr.setStyle("-fx-text-fill: " + GOLD + ";");
         hdr.setPadding(new Insets(0, 0, 8, 0));
         hdr.setAlignment(Pos.CENTER);
+        hdr.setMaxWidth(Double.MAX_VALUE);
         hdr.setTextAlignment(TextAlignment.CENTER);
 
         GridPane grid = new GridPane();
@@ -184,16 +213,16 @@ public class InstructionsView extends BorderPane {
         grid.getColumnConstraints().addAll(col1, col2);
 
         String[][] entries = {
-            {"scarer_door",    "Scarer Door",    "Scarers gain energy;\nLaughers lose it."},
-            {"laugher_door",   "Laugher Door",   "Laughers gain energy;\nScarers lose it."},
-            {"exhausted_door", "Exhausted Door", "Already used —\nno energy effect."},
-            {"monster_cell",   "Monster Cell",   "Same role: free powerup.\nOpposite: energy swap."},
-            {"conveyor",       "Conveyor Belt",  "Jump forward\nby belt amount."},
-            {"sock",           "Sock",           "Move back + lose\n100 energy."},
-            {"card_cell",      "Card Cell",      "Draw a mystery\ncard!"},
-            {"shield",         "Shield",         "Blocks next negative\nenergy effect."},
-            {"confusion",      "Confusion",      "Roles swapped\nfor N turns."},
-            {"freeze",         "Freeze",         "Skip your\nnext turn."},
+            {"red_door",            "Scarer Door",    "Scarers gain energy;\nLaughers lose it."},
+            {"purple_door",         "Laugher Door",   "Laughers gain energy;\nScarers lose it."},
+            {"exhausted_door",      "Exhausted Door", "Already used —\nno energy effect."},
+            {"James_Sullivan",      "Monster Cell",   "Same role: free powerup.\nOpposite: energy swap."},
+            {"Conveyor_Belts",      "Conveyor Belt",  "Jump forward\nby belt amount."},
+            {"Contamination_Socks", "Sock",           "Move back + lose\n100 energy."},
+            {"Card_Cell",           "Card Cell",      "Draw a mystery\ncard!"},
+            {"shield",              "Shield",         "Blocks next negative\nenergy effect."},
+            {"Mind_Scramble",       "Confusion",      "Roles swapped\nfor N turns."},
+            {"freeze",              "Freeze",         "Skip your\nnext turn."},
         };
 
         for (int i = 0; i < entries.length; i++)
@@ -259,15 +288,6 @@ public class InstructionsView extends BorderPane {
         if (img == null) return null;
         ImageView iv = new ImageView(img); iv.setFitWidth(w); iv.setFitHeight(h); iv.setPreserveRatio(false);
         return iv;
-    }
-
-    private String cellImageName(int i) {
-        if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "conveyor";
-        if (has(Constants.SOCK_CELL_INDICES,     i)) return "sock";
-        if (has(Constants.CARD_CELL_INDICES,     i)) return "card_cell";
-        if (has(Constants.MONSTER_CELL_INDICES,  i)) return "monster_cell";
-        if (i % 2 == 1) return (i / 2) % 2 == 0 ? "scarer_door" : "laugher_door";
-        return "metallic_hud_texture";
     }
 
     private String fallbackColour(int i) {

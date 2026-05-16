@@ -3,10 +3,12 @@ package game.gui.view;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class ViewManager {
@@ -27,9 +29,21 @@ public class ViewManager {
         StackPane.setAlignment(globalCloseBtn, Pos.TOP_RIGHT);
         StackPane.setMargin(globalCloseBtn, new Insets(15, 15, 0, 0));
 
-        if (ViewStage.getScene() == null)
-            ViewStage.setScene(new Scene(rootWrapper, 1000, 800));
-        else
+        // Use screen visual bounds so the window always fits on screen
+        Rectangle2D screen = Screen.getPrimary().getVisualBounds();
+        double w = Math.min(1280, screen.getWidth()  * 0.96);
+        double h = Math.min(900,  screen.getHeight() * 0.94);
+
+        if (ViewStage.getScene() == null) {
+            ViewStage.setScene(new Scene(rootWrapper, w, h));
+        } else {
             ViewStage.getScene().setRoot(rootWrapper);
+            ViewStage.setWidth(w);
+            ViewStage.setHeight(h);
+        }
+
+        // Centre the stage on screen
+        ViewStage.setX(screen.getMinX() + (screen.getWidth()  - w) / 2.0);
+        ViewStage.setY(screen.getMinY() + (screen.getHeight() - h) / 2.0);
     }
 }

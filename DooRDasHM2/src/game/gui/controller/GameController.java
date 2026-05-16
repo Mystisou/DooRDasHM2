@@ -58,7 +58,10 @@ public class GameController {
             Cell c = game.getBoard().getCell(idx);
             if (c instanceof MonsterCell) {
                 Monster m = ((MonsterCell) c).getCellMonster();
-                if (m != null) view.addMonsterNameLabel(idx, abbrev(m.getName()));
+                if (m != null) {
+                    view.setMonsterCellImage(idx, m.getName());
+                    view.addMonsterNameLabel(idx, abbrev(m.getName()));
+                }
             }
         }
 

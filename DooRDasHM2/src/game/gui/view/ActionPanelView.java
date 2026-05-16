@@ -51,17 +51,15 @@ public class ActionPanelView extends HBox {
     // ── public update API ────────────────────────────────────────────────────
 
     public void showDiceResult(int roll) {
-        String[] faces = { "", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅" };
-        String face = (roll >= 1 && roll <= 6) ? faces[roll] : "?";
-        diceResultLbl.setText(face + "  " + roll);
+        diceResultLbl.setText("Rolled: " + roll);
     }
 
     public void resetDiceLabel(boolean isPlayerTurn) {
-        diceResultLbl.setText(isPlayerTurn ? "🎲 Roll!" : "🎲 Opp.");
+        diceResultLbl.setText(isPlayerTurn ? "Roll!" : "Opp.");
     }
 
     public void updateCardPileCount(int remaining) {
-        cardsRemainingLbl.setText("🃏 " + remaining);
+        cardsRemainingLbl.setText(String.valueOf(remaining));
     }
 
     public void setPowerEnabled(boolean enabled) {
@@ -89,8 +87,8 @@ public class ActionPanelView extends HBox {
     // ── layout ───────────────────────────────────────────────────────────────
 
     private void build() {
-        // Left column: dice result + cards remaining
-        VBox leftCol = buildLeftColumn();
+        // Left: power button with photo
+        StackPane powerPane = buildPowerButton();
 
         // Centre: event result text
         eventTextLbl = new Label("");
@@ -104,10 +102,10 @@ public class ActionPanelView extends HBox {
         centre.setAlignment(Pos.CENTER);
         HBox.setHgrow(centre, Priority.ALWAYS);
 
-        // Right: power button with photo
-        StackPane powerPane = buildPowerButton();
+        // Right column: dice result + cards remaining
+        VBox rightCol = buildRightColumn();
 
-        this.getChildren().addAll(leftCol, centre, powerPane);
+        this.getChildren().addAll(powerPane, centre, rightCol);
         this.setAlignment(Pos.CENTER);
         this.setSpacing(16);
         this.setPadding(new Insets(10, 14, 10, 14));
@@ -119,9 +117,9 @@ public class ActionPanelView extends HBox {
     }
 
     /** Two small info boxes stacked vertically: dice result on top, cards remaining below. */
-    private VBox buildLeftColumn() {
+    private VBox buildRightColumn() {
         // dice result box
-        diceResultLbl = new Label("🎲 Roll!");
+        diceResultLbl = new Label("Roll!");
         diceResultLbl.setFont(font(F_BANGERS, 18));
         diceResultLbl.setStyle("-fx-text-fill: " + GOLD + ";");
 
@@ -145,7 +143,7 @@ public class ActionPanelView extends HBox {
         );
 
         // cards remaining box
-        cardsRemainingLbl = new Label("🃏 25");
+        cardsRemainingLbl = new Label("25");
         cardsRemainingLbl.setFont(font(F_BANGERS, 16));
         cardsRemainingLbl.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
 

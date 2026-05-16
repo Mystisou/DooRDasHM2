@@ -27,14 +27,41 @@ public final class ResourceLoader {
         // GameView (53 px) and InstructionsView (49 px).  These were the worst
         // offender: loadImage called 100× per screen, same 7 files every time.
         String[] boardImages = {
-            "metallic_hud_texture", "scarer_door", "laugher_door",
-            "conveyor", "sock", "card_cell", "monster_cell",
+            "normal_tile", "red_door", "purple_door",
+            "Conveyor_Belts", "Contamination_Socks", "Card_Cell",
             "exhausted_door", "activated_door", "dice"
         };
         for (String name : boardImages) {
             fetchAndCache(name, 53, 53);
             fetchAndCache(name, 49, 49);
         }
+
+        // Monster images
+        String[] monsterImages = {
+            "James_Sullivan", "Mike_Wazowski", "Randall_Boggs",
+            "Celia_Mae", "Roz", "Fungus", "Henry_Waternoose", "Yeti"
+        };
+        for (String name : monsterImages) {
+            fetchAndCache(name, 68, 68);
+            fetchAndCache(name, 53, 53);
+            fetchAndCache(name, 49, 49);
+        }
+
+        // Card images
+        String[] cardImages = {
+            "Position_Swap", "Contamination_Code", "2319_Alert",
+            "Small_Snatcher", "Sneaky_Thief", "Mega_Drain",
+            "Super_Shield", "Mind_Scramble", "Total_Confusion"
+        };
+        for (String name : cardImages) {
+            fetchAndCache(name, 62, 62);
+        }
+
+        // UI images
+        fetchAndCache("shield",    34, 34);
+        fetchAndCache("freeze",    34, 34);
+        fetchAndCache("energy",    52, 52);
+        fetchAndCache("start_popup", 420, 260);
     }
 
     private static void warmFont(String path, double size) {

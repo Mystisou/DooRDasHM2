@@ -431,15 +431,15 @@ public class StartView extends VBox {
         //   energy      → steal cards     |  shield → Super Shield
         //   confusion   → confusion cards
         String[][] cards = {
-            { "scarer_door", "#3498db", "Position Swap",      "Swap places (only if you're behind)"  },
-            { "sock",        "#e74c3c", "Contamination Code", "You go back to Cell 0"                 },
-            { "sock",        "#e74c3c", "2319 Alert",         "Opponent goes back to Cell 0"          },
-            { "energy",      "#f39c12", "Small Snatcher",     "Steal 50 energy"                      },
-            { "energy",      "#f39c12", "Sneaky Thief",       "Steal 100 energy"                     },
-            { "energy",      "#f39c12", "Mega Drain",         "Steal 150 energy"                     },
-            { "shield",      "#2ecc71", "Super Shield",       "Block next energy loss for your team"  },
-            { "confusion",   "#9b59b6", "Mind Scramble",      "Both confused for 2 turns"             },
-            { "confusion",   "#9b59b6", "Total Confusion",    "Both confused for 3 turns"             },
+            { "Position_Swap",      "#3498db", "Position Swap",      "Swap places (only if you're behind)"  },
+            { "Contamination_Code", "#e74c3c", "Contamination Code", "You go back to Cell 0"                 },
+            { "2319_Alert",         "#e74c3c", "2319 Alert",         "Opponent goes back to Cell 0"          },
+            { "Small_Snatcher",     "#f39c12", "Small Snatcher",     "Steal 50 energy"                      },
+            { "Sneaky_Thief",       "#f39c12", "Sneaky Thief",       "Steal 100 energy"                     },
+            { "Mega_Drain",         "#f39c12", "Mega Drain",         "Steal 150 energy"                     },
+            { "Super_Shield",       "#2ecc71", "Super Shield",       "Block next energy loss for your team"  },
+            { "Mind_Scramble",      "#9b59b6", "Mind Scramble",      "Both confused for 2 turns"             },
+            { "Total_Confusion",    "#9b59b6", "Total Confusion",    "Both confused for 3 turns"             },
         };
 
         GridPane grid = new GridPane();

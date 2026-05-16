@@ -183,8 +183,9 @@ public class BoardView extends StackPane {
         // 2. cell-type overlay (rounded rect + glow)
         String overlayKey = overlayImageKey(i);
         if (overlayKey != null) {
-            StackPane overlayPane = buildOverlay(overlayKey, i);
-            cell.getChildren().add(overlayPane);
+            StackPane op = buildOverlay(overlayKey, i);
+            op.setId("type-overlay");
+            cell.getChildren().add(op);
         }
 
         // 3. start / end badge
@@ -199,6 +200,20 @@ public class BoardView extends StackPane {
         cell.getChildren().add(num);
 
         return cell;
+    }
+
+    /**
+     * Replaces the monster image overlay on a monster cell with the correct monster photo.
+     * Call this after the game is initialized and you know which monster is at each cell.
+     */
+    public void setMonsterCellImage(int cellIdx, String monsterName) {
+        if (outOfRange(cellIdx)) return;
+        StackPane cell = cells[cellIdx];
+        cell.getChildren().removeIf(n -> "type-overlay".equals(n.getId()));
+        StackPane op = buildOverlay(monsterName, cellIdx);
+        op.setId("type-overlay");
+        // insert after the base tile (index 1)
+        cell.getChildren().add(1, op);
     }
 
     private StackPane buildOverlay(String imgKey, int cellIndex) {

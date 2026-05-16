@@ -28,12 +28,11 @@ public class PowerupController {
             gameCtrl.refreshStats();
             boolean isPlayerTurn = (game.getCurrent() == game.getPlayer());
             gameCtrl.setTurnState(
-                "⚡  " + name + " activated their power!    |    Roll the dice.",
+                name + " activated their power!  |  Roll the dice.",
                 isPlayerTurn
             );
         } catch (OutOfEnergyException ex) {
-            view.showAlert("Not Enough Energy",
-                "You need at least 500 energy to activate your power-up.");
+            view.showNotEnoughEnergyPopup();
         } catch (GameActionException ex) {
             view.showAlert("Power-up Failed",
                 "Could not activate power-up:\n" + ex.getMessage());
