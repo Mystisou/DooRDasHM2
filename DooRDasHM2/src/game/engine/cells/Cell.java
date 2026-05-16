@@ -22,7 +22,7 @@ public class Cell {
 	public void setMonster(Monster monster) {
 		this.monster = monster;
 	}
-
+     //
 	public boolean isOccupied() {
 		return getMonster() != null;
 	}
