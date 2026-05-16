@@ -83,19 +83,19 @@ public class GameController {
     private void handleDebugKey(KeyCode code, TurnController turnCtrl) {
         Monster current  = game.getCurrent();
         Monster player   = game.getPlayer();
-        Monster opponent = game.getOpponent();
         boolean isPlayer = (current == player);
         if (code == KeyCode.W) {
             current.setPosition(Constants.WINNING_POSITION);
-            view.movePlayer(current.getPosition(), isPlayer);
+            //view.movePlayer(current.getPosition(), isPlayer);
+            view.jumpPlayer(99, isPlayer);
             refreshStats();
+            if(current.getEnergy()>=1000)
+                navigateToWin(current);
         } else if (code == KeyCode.E) {
             current.setEnergy(1000);
             refreshStats();
-        } else if (code == KeyCode.K) {
-            navigateToWin(player);       // K → Win screen (player wins)
-        } else if (code == KeyCode.L) {
-            navigateToLoss(opponent);    // L → Loss screen (opponent wins)
+            if(current.getPosition()==99)
+               navigateToWin(current); 
         }
     }
 

@@ -1,11 +1,15 @@
 package game.gui.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import game.engine.Constants;
 import game.gui.ResourceLoader;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -22,9 +26,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 10×10 game board.
@@ -276,13 +277,12 @@ public class BoardView extends StackPane {
         rebuildToken(true);
         rebuildToken(false);
 
-        // position both at cell 0
         overlayPane.sceneProperty().addListener((obs, o, scene) -> {
             if (scene != null) {
-                scene.getRoot().applyCss();
-                scene.getRoot().layout();
-                positionToken(playerToken,   0);
-                positionToken(opponentToken, 0);
+                javafx.application.Platform.runLater(() -> {
+                    positionToken(playerToken, 0, true);
+                    positionToken(opponentToken, 0, false);
+                });
             }
         });
     }
@@ -347,9 +347,26 @@ public class BoardView extends StackPane {
         tl.play();
     }
 
-    private void positionToken(StackPane token, int cellIndex) {
+    private void positionToken(StackPane token, int cellIndex, boolean isPlayer) {
         Point2D p = cellOverlayCenter(cellIndex);
-        if (p != null) { token.setLayoutX(p.getX()); token.setLayoutY(p.getY()); }
+        if (p == null) return;
+
+        double offsetX = 0;
+        double offsetY = 0;
+
+        // Only separate when both players are on same cell
+        if (playerPos == opponentPos) {
+            if (isPlayer) {
+                offsetX = -12;
+                offsetY = -6;
+            } else {
+                offsetX = 12;
+                offsetY = 6;
+            }
+        }
+
+        token.setLayoutX(p.getX() + offsetX);
+        token.setLayoutY(p.getY() + offsetY);
     }
 
     private Point2D cellOverlayCenter(int cellIndex) {
@@ -422,4 +439,15 @@ public class BoardView extends StackPane {
     private Font font(String path, double size) { return ResourceLoader.font(path, size); }
     private boolean has(int[] arr, int v) { for (int x : arr) if (x == v) return true; return false; }
     private boolean outOfRange(int i)     { return i < 0 || i >= 100; }
+    
+    
+    public void jumpPlayer(int newPos, boolean isPlayer) {
+        if (isPlayer)
+            playerPos = newPos;
+        else
+            opponentPos = newPos;
+
+        StackPane token = isPlayer ? playerToken : opponentToken;
+        positionToken(token, newPos,isPlayer);
+    }
 }

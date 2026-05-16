@@ -342,4 +342,8 @@ public class GameView extends BorderPane {
 
     private MonsterPanelView panel(boolean isPlayer) { return isPlayer ? playerPanel : opponentPanel; }
     private Font font(String path, double size) { return ResourceLoader.font(path, size); }
+    
+    public void jumpPlayer(int newPos, boolean isPlayer) {
+        boardView.jumpPlayer(newPos, isPlayer);
+    }
 }
