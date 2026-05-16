@@ -53,15 +53,13 @@ public class GameView extends BorderPane {
         BorderPane.setMargin(playerPanel,   new Insets(0, 8, 0, 0));
         BorderPane.setMargin(opponentPanel, new Insets(0, 0, 0, 8));
 
-        // Center column: log on top, board in middle, action panel on bottom
-        // This makes all three the same width, matching the board exactly.
-        VBox centerCol = new VBox(4, logView, boardView, actionPanel);
-        VBox.setVgrow(boardView, Priority.ALWAYS);
-        centerCol.setAlignment(Pos.TOP_CENTER);
-
+        // Restore classic 5-region BorderPane — same structure as old draft.
+        // Log bar on top (full width), stat cards on sides, board in centre, action at bottom.
+        this.setTop(logView);
         this.setLeft(playerPanel);
         this.setRight(opponentPanel);
-        this.setCenter(centerCol);
+        this.setCenter(boardView);
+        this.setBottom(actionPanel);
 
         // Wire the Review Rules button in LogView
         logView.getReviewButton().setOnAction(e -> showReviewPopup());
@@ -181,15 +179,36 @@ public class GameView extends BorderPane {
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(2, 6, 2, 6));
+
+        // ── Cell Types ────────────────────────────────────────────────────────
+        Label cellHdr = new Label("CELL TYPES");
+        cellHdr.setFont(font(F_BANGERS, 20));
+        cellHdr.setStyle("-fx-text-fill: " + GOLD + ";");
+
+        String[][] cellTypes = {
+            {"red_door",            "Scarer Door",    "Match role → gain energy. Wrong role → lose it. One-use."},
+            {"purple_door",         "Laugher Door",   "Match role → gain energy. Wrong role → lose it. One-use."},
+            {"James_Sullivan",      "Monster Cell",   "Same role → free powerup. Opposite role, more energy → swap."},
+            {"Conveyor_Belts",      "Conveyor Belt",  "Instantly transported forward. Landing cell doesn't activate."},
+            {"Contamination_Socks", "Sock",           "Sent backward and lose 100 energy. Shield saves energy only."},
+            {"Card_Cell",           "Card Cell",      "Draw a random card — affects both players."},
+        };
+        VBox cellList = new VBox(5);
+        for (String[] ct : cellTypes) cellList.getChildren().add(qc(ct[0], ct[1], ct[2]));
+
+        Region cellSep = new Region(); cellSep.setPrefHeight(1); cellSep.setMaxWidth(Double.MAX_VALUE);
+        cellSep.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
+
+        // ── Game Rules ────────────────────────────────────────────────────────
+        Label rulesHdr = new Label("QUICK RULES");
+        rulesHdr.setFont(font(F_BANGERS, 20));
+        rulesHdr.setStyle("-fx-text-fill: " + GOLD + ";");
+
         content.getChildren().addAll(
+            cellHdr, cellList, cellSep, rulesHdr,
             qs("The Goal",       "Reach Cell 99 with 1,000+ energy to win."),
             qs("Your Turn",      "Optionally activate powerup (costs 500 energy), then roll and move."),
             qs("Occupied Cell",  "Can't land on your opponent — roll again."),
-            qs("Doors",          "Match your role → team gains energy. Wrong role → team loses it. One-use only."),
-            qs("Monster Cells",  "Same role → free powerup. Opposite role, more energy → energies swap."),
-            qs("Conveyor Belts", "Jump forward automatically. Landing cell doesn't activate."),
-            qs("Socks",          "Move backwards and lose 100 energy. Shield saves the energy, not the move."),
-            qs("Card Cells",     "Draw a random card — affects both players."),
             qs("Shield",         "Blocks next energy loss for your team. Schemer's steal ignores it."),
             qs("Confusion",      "Roles flip for a few turns — wrong doors will hurt you!"),
             qs("Powerups",
@@ -200,7 +219,7 @@ public class GameView extends BorderPane {
         ScrollPane scroll = new ScrollPane(content);
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setPrefHeight(370);
+        scroll.setPrefHeight(440);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
 
         Button closeBtn = new Button("GOT IT!");
@@ -215,17 +234,34 @@ public class GameView extends BorderPane {
         VBox outer = new VBox(10, header, sep, scroll, btnRow);
         outer.setPadding(new Insets(24, 24, 20, 24));
 
-        Rectangle clip = new Rectangle(520, 560); clip.setArcWidth(20); clip.setArcHeight(20);
+        Rectangle clip = new Rectangle(520, 640); clip.setArcWidth(20); clip.setArcHeight(20);
         StackPane root = new StackPane(outer); root.setClip(clip);
         root.setStyle("-fx-background-color: #0d0d1a; -fx-background-radius: 16; -fx-border-color: rgba(155,89,182,0.55); -fx-border-radius: 16; -fx-border-width: 2; -fx-effect: dropshadow(gaussian,#6c3483,26,0.32,0,0);");
 
         // position centred on screen
         Screen screen = Screen.getPrimary();
         popup.setX((screen.getVisualBounds().getWidth()  - 520) / 2);
-        popup.setY((screen.getVisualBounds().getHeight() - 560) / 2);
+        popup.setY((screen.getVisualBounds().getHeight() - 640) / 2);
 
-        popup.setScene(new javafx.scene.Scene(root, 520, 560) {{ setFill(Color.TRANSPARENT); }});
+        popup.setScene(new javafx.scene.Scene(root, 520, 640) {{ setFill(Color.TRANSPARENT); }});
         popup.showAndWait();
+    }
+
+    /** Cell-type row for the review popup: small image + name + one-line description. */
+    private HBox qc(String imgKey, String name, String desc) {
+        javafx.scene.image.Image img = ResourceLoader.loadImage(imgKey, 32, 32);
+        javafx.scene.layout.StackPane imgBox = new javafx.scene.layout.StackPane();
+        imgBox.setMinSize(34, 34); imgBox.setMaxSize(34, 34);
+        imgBox.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 6;");
+        if (img != null) {
+            ImageView iv = new ImageView(img); iv.setFitWidth(30); iv.setFitHeight(30);
+            imgBox.getChildren().add(iv);
+        }
+        Label t = new Label(name); t.setFont(font(F_BANGERS, 15)); t.setStyle("-fx-text-fill: white; -fx-min-width: 100;");
+        Label d = new Label(desc); d.setFont(font(F_INTER, 11)); d.setStyle("-fx-text-fill: #95a5a6;"); d.setWrapText(true);
+        d.setMaxWidth(280);
+        HBox row = new HBox(8, imgBox, t, d); row.setAlignment(Pos.CENTER_LEFT);
+        return row;
     }
 
     private VBox qs(String title, String body) {

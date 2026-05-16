@@ -45,6 +45,9 @@ public class TurnController {
         boolean wasFrozen = current.isFrozen();
         boolean isPlayer  = (current == player);
 
+        // Clear the previous roll's number as soon as a new roll starts
+        view.resetDiceLabel(isPlayer);
+
         // pre-turn snapshots
         ArrayList<Card> deckSnapshot    = new ArrayList<>(Board.cards);
         int   playerEnergyBefore        = player  .getEnergy();

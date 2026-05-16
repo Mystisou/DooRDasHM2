@@ -64,8 +64,8 @@ public class CellController {
     // ── event message ─────────────────────────────────────────────────────────
 
     /**
-     * Returns a one-line description of what happened this turn.
-     * Called by TurnController after game.playTurn() has already run.
+     * Returns a clear, human-readable description of what happened this turn,
+     * written from the current player's perspective ("You" vs "Opponent").
      */
     public String buildEventMessage(
             Monster current,  Cell rolledCell, int rolledPos, boolean isPlayer,
@@ -73,31 +73,85 @@ public class CellController {
             boolean wasPlayerShielded, boolean wasOpponentShielded,
             Monster player,   Monster opponent, Card drawn) {
 
+        String you  = isPlayer ? "You"       : "Opponent";
+        String your = isPlayer ? "Your"      : "Opponent's";
+        String them = isPlayer ? "Opponent"  : "You";
+
+        // ── Transport cells ───────────────────────────────────────────────────
         if (rolledCell instanceof ConveyorBelt) {
-            return "⚙  Conveyor Belt at cell " + rolledPos
-                 + " → moved to cell " + current.getPosition() + "!";
+            int extra = current.getPosition() - rolledPos;
+            return you + " landed on a Conveyor Belt at cell " + rolledPos
+                 + " and moved forward " + extra + " extra cell" + (extra == 1 ? "" : "s")
+                 + " to cell " + current.getPosition() + ".";
         }
 
         if (rolledCell instanceof ContaminationSock) {
-            return "☠  Contamination Sock at cell " + rolledPos
-                 + "! Moved back to cell " + current.getPosition()
-                 + "  |  -" + Constants.SLIP_PENALTY + " ⚡";
+            int backward = rolledPos - current.getPosition();
+            return you + " landed on a Contamination Sock at cell " + rolledPos
+                 + "! Moved back " + backward + " cell" + (backward == 1 ? "" : "s")
+                 + " to cell " + current.getPosition()
+                 + " and lost " + Constants.SLIP_PENALTY + " energy.";
         }
 
+        // ── Card drawn ────────────────────────────────────────────────────────
         if (drawn != null) {
-            return "🃏  Drew: " + drawn.getName() + " — " + CardController.shortEffect(drawn);
+            return you + " drew a card: " + drawn.getName()
+                 + " — " + CardController.shortEffect(drawn);
         }
 
-        // shield block?
+        // ── Shield blocked ────────────────────────────────────────────────────
         boolean playerBlocked   = wasPlayerShielded   && !player  .isShielded() && playerDelta   == 0;
         boolean opponentBlocked = wasOpponentShielded && !opponent.isShielded() && opponentDelta == 0;
-        if (playerBlocked)   return "🛡  " + player  .getName() + "'s shield blocked the energy loss!";
-        if (opponentBlocked) return "🛡  " + opponent.getName() + "'s shield blocked the energy loss!";
+        if (playerBlocked)   return (isPlayer ? "Your" : "Opponent's") + " shield blocked the energy loss at cell " + rolledPos + "!";
+        if (opponentBlocked) return (isPlayer ? "Opponent's" : "Your") + " shield blocked the energy loss at cell " + rolledPos + "!";
 
-        // door / monster cell energy change
-        int curDelta = isPlayer ? playerDelta : opponentDelta;
-        if (curDelta > 0) return "🚪  +" + curDelta + " energy from door!";
-        if (curDelta < 0) return "🚪  "  + curDelta + " energy from door!";
-        return "";   // normal cell — no message needed
+        // ── Door / Monster cell energy change ─────────────────────────────────
+        int curDelta  = isPlayer ? playerDelta   : opponentDelta;
+        int otherDelta= isPlayer ? opponentDelta : playerDelta;
+
+        StringBuilder sb = new StringBuilder();
+
+        if (rolledCell instanceof DoorCell) {
+            DoorCell door = (DoorCell) rolledCell;
+            String doorRole = door.getRole().toString();
+
+            if (curDelta > 0) {
+                sb.append(you).append(" gained ").append(curDelta)
+                  .append(" energy from the ").append(doorRole).append(" door at cell ").append(rolledPos).append("!");
+            } else if (curDelta < 0) {
+                sb.append(you).append(" lost ").append(Math.abs(curDelta))
+                  .append(" energy at the ").append(doorRole).append(" door at cell ").append(rolledPos).append(".");
+            } else {
+                sb.append(you).append(" landed on the ").append(doorRole)
+                  .append(" door at cell ").append(rolledPos).append(" (already exhausted).");
+            }
+
+            // Mention if the other player was also affected
+            if (otherDelta > 0) {
+                sb.append(" ").append(them).append(" also gained ").append(otherDelta).append(" energy.");
+            } else if (otherDelta < 0) {
+                sb.append(" ").append(them).append(" also lost ").append(Math.abs(otherDelta)).append(" energy.");
+            }
+            return sb.toString();
+        }
+
+        // Monster cell or generic energy change
+        if (curDelta > 0) {
+            sb.append(you).append(" gained ").append(curDelta).append(" energy at cell ").append(rolledPos).append(".");
+        } else if (curDelta < 0) {
+            sb.append(you).append(" lost ").append(Math.abs(curDelta)).append(" energy at cell ").append(rolledPos).append(".");
+        }
+        if (otherDelta > 0) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(them).append(" gained ").append(otherDelta).append(" energy.");
+        } else if (otherDelta < 0) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(them).append(" lost ").append(Math.abs(otherDelta)).append(" energy.");
+        }
+
+        if (sb.length() == 0) {
+            sb.append(you).append(" landed on a normal cell (").append(rolledPos).append("). Nothing happened.");
+        }
+        return sb.toString();
     }
 }

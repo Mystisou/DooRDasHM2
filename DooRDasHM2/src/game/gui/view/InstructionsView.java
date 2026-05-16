@@ -196,21 +196,13 @@ public class InstructionsView extends BorderPane {
     }
 
     private VBox buildDescSection() {
-        Label hdr = new Label("CELL  TYPES  &  EFFECTS");
+        Label hdr = new Label("CELL  TYPES");
         hdr.setFont(font(F_PIXEL, 10));
         hdr.setStyle("-fx-text-fill: " + GOLD + ";");
-        hdr.setPadding(new Insets(0, 0, 8, 0));
+        hdr.setPadding(new Insets(0, 0, 10, 0));
         hdr.setAlignment(Pos.CENTER);
         hdr.setMaxWidth(Double.MAX_VALUE);
         hdr.setTextAlignment(TextAlignment.CENTER);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(8);
-
-        ColumnConstraints col1 = new ColumnConstraints(); col1.setPercentWidth(50);
-        ColumnConstraints col2 = new ColumnConstraints(); col2.setPercentWidth(50);
-        grid.getColumnConstraints().addAll(col1, col2);
 
         String[][] entries = {
             {"red_door",            "Scarer Door",    "Scarers gain energy;\nLaughers lose it."},
@@ -221,10 +213,10 @@ public class InstructionsView extends BorderPane {
             {"Card_Cell",           "Card Cell",      "Draw a mystery\ncard!"},
         };
 
-        for (int i = 0; i < entries.length; i++)
-            grid.add(buildDescRow(entries[i][0], entries[i][1], entries[i][2]), i % 2, i / 2);
+        VBox list = new VBox(8);
+        for (String[] e : entries) list.getChildren().add(buildDescRow(e[0], e[1], e[2]));
 
-        VBox panel = new VBox(10, hdr, grid);
+        VBox panel = new VBox(10, hdr, list);
         panel.setPadding(new Insets(14));
         panel.setStyle(
             "-fx-background-color: rgba(108,52,131,0.13);" +
@@ -244,7 +236,6 @@ public class InstructionsView extends BorderPane {
         StackPane imgBox = new StackPane();
         imgBox.setMinSize(40, 40); imgBox.setPrefSize(40, 40); imgBox.setMaxSize(40, 40);
         imgBox.setStyle("-fx-background-color: " + BG_MID + "; -fx-background-radius: 8;");
-
         ImageView iv = imageView(imgName, 34, 34);
         if (iv != null) imgBox.getChildren().add(iv);
         else { Circle c = new Circle(17); c.setFill(Color.web("#3d5166")); imgBox.getChildren().add(c); }
@@ -255,7 +246,7 @@ public class InstructionsView extends BorderPane {
         nameLbl.setWrapText(true);
 
         Label descLbl = new Label(desc);
-        descLbl.setFont(font(F_INTER, 12));
+        descLbl.setFont(font(F_INTER, 11));
         descLbl.setStyle("-fx-text-fill: " + TEXT_DIM + ";");
         descLbl.setWrapText(true);
 
@@ -264,7 +255,7 @@ public class InstructionsView extends BorderPane {
 
         HBox row = new HBox(8, imgBox, textBox);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(6, 8, 6, 8));
+        row.setPadding(new Insets(5, 8, 5, 8));
         row.setStyle("-fx-background-color: rgba(255,255,255,0.04); -fx-background-radius: 8;");
         return row;
     }

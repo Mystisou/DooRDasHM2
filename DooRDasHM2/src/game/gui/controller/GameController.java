@@ -9,12 +9,12 @@ import game.engine.cells.MonsterCell;
 import game.engine.monsters.Dasher;
 import game.engine.monsters.Monster;
 import game.engine.monsters.MultiTasker;
+import game.gui.view.EndGamePopup;
 import game.gui.view.GameView;
-import game.gui.view.LossView;
 import game.gui.view.StartView;
 import game.gui.view.ViewManager;
-import game.gui.view.WinView;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Window;
 
 public class GameController {
 
@@ -82,7 +82,9 @@ public class GameController {
 
     private void handleDebugKey(KeyCode code, TurnController turnCtrl) {
         Monster current  = game.getCurrent();
-        boolean isPlayer = (current == game.getPlayer());
+        Monster player   = game.getPlayer();
+        Monster opponent = game.getOpponent();
+        boolean isPlayer = (current == player);
         if (code == KeyCode.W) {
             current.setPosition(Constants.WINNING_POSITION);
             view.movePlayer(current.getPosition(), isPlayer);
@@ -90,6 +92,10 @@ public class GameController {
         } else if (code == KeyCode.E) {
             current.setEnergy(1000);
             refreshStats();
+        } else if (code == KeyCode.K) {
+            navigateToWin(player);       // K → Win screen (player wins)
+        } else if (code == KeyCode.L) {
+            navigateToLoss(opponent);    // L → Loss screen (opponent wins)
         }
     }
 
@@ -105,22 +111,27 @@ public class GameController {
     public void setTurnState(String message, boolean isPlayerTurn) {
         view.updateLog(message);
         view.setDiceTurnIndicator(isPlayerTurn);
-        view.resetDiceLabel(isPlayerTurn);
+        // NOTE: resetDiceLabel is NOT called here — the rolled number stays
+        // visible until the NEXT roll begins (see TurnController.handleRoll).
         view.setPowerEnabled(isPlayerTurn);
     }
 
     public void navigateToWin(Monster winner) {
-        Monster loser = (winner == game.getPlayer()) ? game.getOpponent() : game.getPlayer();
-        WinView wv    = new WinView(winner.getName(), winner.getRole().toString(), winner.getEnergy(), loser.getName(), loser.getEnergy());
-        wv.getReturnButton().setOnAction(e -> { StartView sv = new StartView(); new StartController(sv); ViewManager.updateView(sv); });
-        ViewManager.updateView(wv);
+        Monster player   = game.getPlayer();
+        Monster opponent = game.getOpponent();
+        boolean playerWon = (winner == player);
+        Window owner = view.getScene() != null ? view.getScene().getWindow() : null;
+        EndGamePopup.show(
+            playerWon,
+            player  .getName(), player  .getRole().toString(), player  .getEnergy(),
+            opponent.getName(), opponent.getRole().toString(), opponent.getEnergy(),
+            owner,
+            () -> { StartView sv = new StartView(); new StartController(sv); ViewManager.updateView(sv); }
+        );
     }
 
     public void navigateToLoss(Monster winner) {
-        Monster player = game.getPlayer();
-        LossView lv    = new LossView(player.getName(), player.getRole().toString(), player.getEnergy(), winner.getName(), winner.getRole().toString(), winner.getEnergy());
-        lv.getReturnButton().setOnAction(e -> { StartView sv = new StartView(); new StartController(sv); ViewManager.updateView(sv); });
-        ViewManager.updateView(lv);
+        navigateToWin(winner);   // same popup — playerWon=false because winner != player
     }
 
     public String buildStatus(Monster m) {

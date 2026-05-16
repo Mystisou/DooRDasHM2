@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class BoardView extends StackPane {
 
-    private static final int    CELL_SIZE   = 54;
-    private static final int    OVERLAY_SZ  = 40;  // overlay image size inside cell
+    private static final int    CELL_SIZE   = 50;
+    private static final int    OVERLAY_SZ  = 37;  // overlay image size inside cell
     private static final int    TOKEN_SIZE  = 32;
     private static final int    STEP_MS     = 120;  // ms per cell in animation
 

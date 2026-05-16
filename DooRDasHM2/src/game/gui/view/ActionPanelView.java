@@ -11,105 +11,153 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 /**
- * Bottom action bar.
+ * Bottom action bar layout (left → right):
  *
- * Layout:
- *   [dice result box ]   [ event result text (gained +120...) ]   [ POWER button w/ photo ]
- *   [cards remaining ]
- *
- * The top log (LogView) now shows only "YOUR TURN" / "OPPONENT'S TURN".
+ *   [ VBox: Cards remaining (big) / Roll result (bold yellow) ]
+ *   [ Event log label (wide) ]
+ *   [ Dice image (click to roll) ]
+ *   [ Player photo (click to activate power) ]
  */
 public class ActionPanelView extends HBox {
 
     private static final String BG_DARK   = "#0d0d1a";
     private static final String GOLD      = "#f1c40f";
     private static final String TEXT_DIM  = "#95a5a6";
-    private static final String CYAN      = "#00bcd4";
-    private static final String RED_BTN   = "#c0392b";
-    private static final String RED_HOVER = "#e74c3c";
+    private static final String PURPLE    = "rgba(155,89,182,0.50)";
+    private static final String PURPLE_BG = "rgba(108,52,131,0.18)";
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
-    // exposed for wiring
-    private Button    powerBtn;
-    private ImageView diceClickTarget;   // invisible overlay — GameController wires mouse click here
+    // exposed to GameController
+    private Button    powerBtn;          // invisible trigger, wired by controller
+    private ImageView diceImageView;     // click target for rolling
+    private StackPane diceWrapper;       // glow applied here
 
     // state labels
-    private Label diceResultLbl;
-    private Label cardsRemainingLbl;
-    private Label eventTextLbl;
+    private Label cardsNumLabel;         // the big "25" count
+    private Label rollNumLabel;          // the bold yellow rolled number
+    private Label eventLogLabel;         // describes what happened
+
+    // photo pane for the player
+    private StackPane photoPowerPane;
 
     public ActionPanelView() { build(); }
 
     // ── public update API ────────────────────────────────────────────────────
 
     public void showDiceResult(int roll) {
-        diceResultLbl.setText(String.valueOf(roll));
+        rollNumLabel.setText(String.valueOf(roll));
     }
 
     public void resetDiceLabel(boolean isPlayerTurn) {
-        diceResultLbl.setText("—");
+        rollNumLabel.setText("—");
+        eventLogLabel.setText(isPlayerTurn ? "Your turn — roll the dice!" : "Opponent's turn — roll for them.");
     }
 
+    public void updateEventText(String text) { eventLogLabel.setText(text); }
+    public void clearEventText()             { eventLogLabel.setText(""); }
+
     public void updateCardPileCount(int remaining) {
-        cardsRemainingLbl.setText(String.valueOf(remaining));
+        cardsNumLabel.setText(String.valueOf(remaining));
     }
 
     public void setPowerEnabled(boolean enabled) {
+        photoPowerPane.setOpacity(enabled ? 1.0 : 0.40);
         powerBtn.setDisable(!enabled);
-        powerBtn.setOpacity(enabled ? 1.0 : 0.40);
     }
 
     public void setDiceTurnIndicator(boolean isPlayerTurn) {
-        DropShadow glow = new DropShadow(22, isPlayerTurn ? Color.CYAN : Color.MAGENTA);
-        glow.setSpread(0.35);
-        diceClickTarget.setEffect(glow);
-        diceClickTarget.setOpacity(isPlayerTurn ? 1.0 : 0.65);
+        DropShadow glow = new DropShadow(26, isPlayerTurn ? Color.CYAN : Color.RED);
+        glow.setSpread(0.40);
+        diceWrapper.setEffect(glow);
+        diceWrapper.setOpacity(isPlayerTurn ? 1.0 : 0.65);
     }
 
-    /** Shows "Gained +120 energy from door!" style text between the boxes and power button. */
-    public void updateEventText(String text) {
-        eventTextLbl.setText(text);
+    private StackPane buildPhotoPane() {
+        StackPane pane = new StackPane();
+        pane.setMinSize(76, 76); pane.setMaxSize(76, 76);
+        pane.setStyle(
+            "-fx-background-color: #0d0d1a;" +
+            "-fx-background-radius: 38;" +
+            "-fx-border-color: #c0392bBB;" +
+            "-fx-border-width: 2.5;" +
+            "-fx-border-radius: 38;" +
+            "-fx-effect: dropshadow(gaussian,#c0392b,14,0.4,0,0);" +
+            "-fx-cursor: hand;"
+        );
+
+        // Always show the energy image (not the monster photo)
+        Image energyImg = ResourceLoader.loadImage("energy", 56, 56);
+        if (energyImg != null) {
+            ImageView iv = new ImageView(energyImg);
+            iv.setFitWidth(56); iv.setFitHeight(56);
+            iv.setClip(new Circle(28, 28, 28));
+            iv.setEffect(new DropShadow(10, Color.web("#c0392b", 0.7)));
+            pane.getChildren().add(iv);
+        } else {
+            Label fb = new Label("PWR");
+            fb.setFont(font(F_BANGERS, 18));
+            fb.setStyle("-fx-text-fill: #c0392b;");
+            pane.getChildren().add(fb);
+        }
+        return pane;
     }
 
-    public void clearEventText() { eventTextLbl.setText(""); }
-
-    public Button    getPowerBtn()         { return powerBtn;        }
-    public ImageView getDiceImageView()    { return diceClickTarget; }
+    public Button    getPowerBtn()      { return powerBtn;      }
+    public ImageView getDiceImageView() { return diceImageView; }
 
     // ── layout ───────────────────────────────────────────────────────────────
 
     private void build() {
-        // Left: power button
-        StackPane powerPane = buildPowerButton();
+        HBox leftCol = buildLeftInfoCol();
 
-        // Centre: event result text (grows to fill space)
-        eventTextLbl = new Label("");
-        eventTextLbl.setFont(font(F_INTER, 13));
-        eventTextLbl.setStyle("-fx-text-fill: " + GOLD + ";");
-        eventTextLbl.setWrapText(true);
-        eventTextLbl.setMaxWidth(240);
-        eventTextLbl.setAlignment(Pos.CENTER);
-        eventTextLbl.setTextAlignment(TextAlignment.CENTER);
-        HBox centre = new HBox(eventTextLbl);
-        centre.setAlignment(Pos.CENTER);
-        HBox.setHgrow(centre, Priority.ALWAYS);
+        eventLogLabel = new Label("Roll the dice to begin!");
+        eventLogLabel.setFont(font(F_INTER, 13));
+        eventLogLabel.setStyle(
+            "-fx-text-fill: " + GOLD + ";" +
+            "-fx-background-color: " + PURPLE_BG + ";" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: " + PURPLE + ";" +
+            "-fx-border-radius: 10;" +
+            "-fx-border-width: 1.5;" +
+            "-fx-padding: 8 14;"
+        );
+        eventLogLabel.setWrapText(true);
+        eventLogLabel.setMinWidth(300);
+        eventLogLabel.setPrefWidth(340);
+        eventLogLabel.setMaxWidth(360);
+        eventLogLabel.setAlignment(Pos.CENTER);
+        eventLogLabel.setTextAlignment(TextAlignment.CENTER);
+        HBox.setHgrow(eventLogLabel, Priority.ALWAYS);
 
-        // Right: stacked — [small: dice image + cards count] on top,
-        //                   [big: roll result number] on bottom
-        VBox rightCol = buildRightColumn();
+        Image diceImg = ResourceLoader.loadImage("dice", 72, 72);
+        diceImageView = (diceImg != null) ? new ImageView(diceImg) : new ImageView();
+        diceImageView.setFitWidth(72); diceImageView.setFitHeight(72);
+        diceImageView.setClip(new Circle(36, 36, 36));
+        diceImageView.setStyle("-fx-cursor: hand;");
 
-        this.getChildren().addAll(powerPane, centre, rightCol);
+        diceWrapper = new StackPane(diceImageView);
+        diceWrapper.setMinSize(76, 76); diceWrapper.setMaxSize(76, 76);
+        diceWrapper.setStyle("-fx-cursor: hand;");
+        setDiceTurnIndicator(true);
+
+        photoPowerPane = buildPhotoPane();
+
+        powerBtn = new Button();
+        powerBtn.setMinSize(76, 76); powerBtn.setMaxSize(76, 76);
+        powerBtn.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 0;");
+        photoPowerPane.getChildren().add(powerBtn);
+
+        this.getChildren().addAll(leftCol, eventLogLabel, diceWrapper, photoPowerPane);
         this.setAlignment(Pos.CENTER);
         this.setSpacing(14);
-        this.setPadding(new Insets(8, 12, 8, 12));
+        this.setPadding(new Insets(10, 16, 8, 16));
         this.setStyle(
             "-fx-background-color: " + BG_DARK + ";" +
             "-fx-border-color: rgba(155,89,182,0.30) transparent transparent transparent;" +
@@ -117,110 +165,54 @@ public class ActionPanelView extends HBox {
         );
     }
 
-    private VBox buildRightColumn() {
-        // ── Top box: clickable dice image + "Cards: N" ──────────────────────
-        Image diceImg = ResourceLoader.loadImage("dice", 40, 40);
-        diceClickTarget = (diceImg != null) ? new ImageView(diceImg) : new ImageView();
-        diceClickTarget.setFitWidth(40); diceClickTarget.setFitHeight(40);
-        diceClickTarget.setClip(new Circle(20, 20, 20));
-        diceClickTarget.setStyle("-fx-cursor: hand;");
+    /** Left section: "CARDS LEFT" and "ROLLED" boxes side by side (not stacked). */
+    private HBox buildLeftInfoCol() {
+        // ── cards remaining ───────────────────────────────────────────────────
+        Label cardsTitle = new Label("CARDS");
+        cardsTitle.setFont(font(F_PIXEL, 6));
+        cardsTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.85;");
 
-        cardsRemainingLbl = new Label("25");
-        cardsRemainingLbl.setFont(font(F_BANGERS, 20));
-        cardsRemainingLbl.setStyle("-fx-text-fill: " + GOLD + ";");
+        cardsNumLabel = new Label("25");
+        cardsNumLabel.setFont(font(F_BANGERS, 30));
+        cardsNumLabel.setStyle("-fx-text-fill: white;");
 
-        Label cardsTitle = new Label("Cards");
-        cardsTitle.setFont(font(F_INTER, 10));
-        cardsTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.75;");
-
-        VBox cardsLblBox = new VBox(0, cardsRemainingLbl, cardsTitle);
-        cardsLblBox.setAlignment(Pos.CENTER_LEFT);
-
-        HBox topBox = new HBox(10, diceClickTarget, cardsLblBox);
-        topBox.setAlignment(Pos.CENTER_LEFT);
-        topBox.setPadding(new Insets(5, 10, 5, 10));
-        topBox.setStyle(
-            "-fx-background-color: rgba(108,52,131,0.18);" +
-            "-fx-background-radius: 8;" +
-            "-fx-border-color: rgba(155,89,182,0.40);" +
-            "-fx-border-radius: 8;" +
-            "-fx-border-width: 1;"
-        );
-
-        // ── Bottom box: big rolled number display ────────────────────────────
-        diceResultLbl = new Label("—");
-        diceResultLbl.setFont(font(F_BANGERS, 44));
-        diceResultLbl.setStyle("-fx-text-fill: " + GOLD + ";");
-        diceResultLbl.setAlignment(Pos.CENTER);
-
-        Label rollTitle = new Label("ROLLED");
-        rollTitle.setFont(font(F_PIXEL, 7));
-        rollTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.7;");
-
-        VBox bottomBox = new VBox(2, rollTitle, diceResultLbl);
-        bottomBox.setAlignment(Pos.CENTER);
-        bottomBox.setPadding(new Insets(8, 18, 8, 18));
-        bottomBox.setStyle(
-            "-fx-background-color: rgba(108,52,131,0.25);" +
+        VBox cardsBox = new VBox(2, cardsTitle, cardsNumLabel);
+        cardsBox.setAlignment(Pos.CENTER);
+        cardsBox.setPadding(new Insets(6, 14, 6, 14));
+        cardsBox.setStyle(
+            "-fx-background-color: " + PURPLE_BG + ";" +
             "-fx-background-radius: 10;" +
-            "-fx-border-color: rgba(155,89,182,0.55);" +
+            "-fx-border-color: " + PURPLE + ";" +
             "-fx-border-radius: 10;" +
             "-fx-border-width: 1.5;"
         );
 
-        VBox col = new VBox(6, topBox, bottomBox);
-        col.setAlignment(Pos.CENTER_LEFT);
-        return col;
-    }
+        // ── rolled number ─────────────────────────────────────────────────────
+        Label rolledTitle = new Label("ROLLED");
+        rolledTitle.setFont(font(F_PIXEL, 6));
+        rolledTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.85;");
 
-    /**
-     * Power button: circular monster-ability photo on top,
-     * "ACTIVATE POWER" label below, styled with red glow.
-     */
-    private StackPane buildPowerButton() {
-        Image powerImg = ResourceLoader.loadImage("energy", 52, 52);
-        ImageView powerIv = (powerImg != null) ? new ImageView(powerImg) : new ImageView();
-        powerIv.setFitWidth(52); powerIv.setFitHeight(52);
-        Circle ivClip = new Circle(26, 26, 26);
-        powerIv.setClip(ivClip);
+        rollNumLabel = new Label("—");
+        rollNumLabel.setFont(font(F_BANGERS, 30));
+        rollNumLabel.setStyle("-fx-text-fill: " + GOLD + "; -fx-font-weight: bold;");
 
-        Label btnLabel = new Label("ACTIVATE\nPOWER");
-        btnLabel.setFont(font(F_PIXEL, 7));
-        btnLabel.setStyle("-fx-text-fill: white;");
-        btnLabel.setAlignment(Pos.CENTER);
-        btnLabel.setTextAlignment(TextAlignment.CENTER);
-
-        VBox inner = new VBox(5, powerIv, btnLabel);
-        inner.setAlignment(Pos.CENTER);
-        inner.setPadding(new Insets(10, 14, 10, 14));
-
-        powerBtn = new Button();
-        powerBtn.setGraphic(inner);
-        powerBtn.setPrefSize(110, 90);
-        powerBtn.setStyle(
-            "-fx-background-color: " + RED_BTN + ";" +
-            "-fx-background-radius: 14;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian," + RED_BTN + ",16,0.5,0,0);"
+        VBox rollBox = new VBox(2, rolledTitle, rollNumLabel);
+        rollBox.setAlignment(Pos.CENTER);
+        rollBox.setPadding(new Insets(6, 14, 6, 14));
+        rollBox.setStyle(
+            "-fx-background-color: rgba(108,52,131,0.10);" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: rgba(241,196,15,0.45);" +
+            "-fx-border-radius: 10;" +
+            "-fx-border-width: 1.5;"
         );
-        powerBtn.setOnMouseEntered(e -> powerBtn.setStyle(
-            "-fx-background-color: " + RED_HOVER + ";" +
-            "-fx-background-radius: 14;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian," + RED_HOVER + ",20,0.6,0,0);"
-        ));
-        powerBtn.setOnMouseExited(e -> powerBtn.setStyle(
-            "-fx-background-color: " + RED_BTN + ";" +
-            "-fx-background-radius: 14;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian," + RED_BTN + ",16,0.5,0,0);"
-        ));
 
-        // wrap in StackPane so we can position it
-        StackPane wrap = new StackPane(powerBtn);
-        wrap.setAlignment(Pos.CENTER);
-        return wrap;
+        // ── side by side ──────────────────────────────────────────────────────
+        HBox row = new HBox(8, cardsBox, rollBox);
+        row.setAlignment(Pos.CENTER);
+        return row;
     }
 
     private Font font(String path, double size) { return ResourceLoader.font(path, size); }
 }
+
