@@ -81,7 +81,10 @@ public final class OccupiedCellPopup {
         rollBtn.setOnMouseExited(e  -> applyBtnStyle(rollBtn, RED_BTN));
         rollBtn.setOnAction(e -> {
             popup.close();
-            if (onRollAgain != null) onRollAgain.run();
+            // Platform.runLater ensures handleRoll() runs after showAndWait() has
+            // fully unwound — without this, a second InvalidMoveException would try
+            // to open another showAndWait() inside the first one, which JavaFX blocks.
+            if (onRollAgain != null) javafx.application.Platform.runLater(onRollAgain);
         });
 
         VBox content = new VBox(12, icon, title, msg, rollBtn);

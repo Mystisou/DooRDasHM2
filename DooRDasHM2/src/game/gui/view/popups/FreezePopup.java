@@ -43,9 +43,10 @@ public final class FreezePopup {
 
         Label msg = new Label(monsterName + " is FROZEN and cannot move.\nTheir entire turn is skipped.");
         msg.setFont(font(F_INTER, 13));
-        msg.setStyle("-fx-text-fill: #ecf0f1;");
+        msg.setStyle("-fx-text-fill: #dce9ff;");
         msg.setWrapText(true);
-        msg.setMaxWidth(320);
+        msg.setPrefWidth(280);
+        msg.setMaxWidth(280);
         msg.setAlignment(Pos.CENTER);
         msg.setTextAlignment(TextAlignment.CENTER);
 
@@ -62,23 +63,25 @@ public final class FreezePopup {
         VBox content = new VBox(12, icon, title, msg, okBtn);
         content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(28, 32, 28, 32));
+        content.setPrefWidth(380);
+        content.setMaxWidth(380);
 
-        Rectangle clip = new Rectangle(380, 260);
+        Rectangle clip = new Rectangle(380, 320);
         clip.setArcWidth(24);
         clip.setArcHeight(24);
 
         StackPane root = new StackPane(content);
         root.setClip(clip);
         root.setStyle(
-            "-fx-background-color: #0d0d1a;" +
+            "-fx-background-color: linear-gradient(to bottom, #060d1f, #0a1530);" +
             "-fx-background-radius: 16;" +
-            "-fx-border-color: rgba(116,185,255,0.60);" +
+            "-fx-border-color: rgba(116,185,255,0.75);" +
             "-fx-border-radius: 16;" +
             "-fx-border-width: 2;" +
-            "-fx-effect: dropshadow(gaussian,#0984e3,22,0.35,0,0);"
+            "-fx-effect: dropshadow(gaussian,#0984e3,28,0.45,0,0);"
         );
 
-        Scene scene = new Scene(root, 380, 260);
+        Scene scene = new Scene(root, 380, 320);
         scene.setFill(Color.TRANSPARENT);
         popup.setScene(scene);
         popup.showAndWait();

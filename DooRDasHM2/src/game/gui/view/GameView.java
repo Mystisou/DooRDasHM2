@@ -239,7 +239,8 @@ public class GameView extends BorderPane {
             qs("Your Turn",      "Optionally activate powerup (costs 500 energy), then roll and move."),
             qs("Occupied Cell",  "Can't land on your opponent — roll again."),
             qs("Shield",         "Blocks next energy loss for your team. Schemer's steal ignores it."),
-            qs("Confusion",      "Roles flip for a few turns — wrong doors will hurt you!")
+            qs("Confusion",      "Roles flip for a few turns — wrong doors will hurt you!"),
+            qs("Freeze",       "Dynamo's powerup skips the opponent's entire next turn. The frozen monster cannot roll or act. Lasts 1 turn.")
         );
 
         ScrollPane scroll = new ScrollPane(content);

@@ -13,6 +13,8 @@ import game.gui.view.EndGamePopup;
 import game.gui.view.GameView;
 import game.gui.view.StartView;
 import game.gui.view.ViewManager;
+import game.gui.view.popups.FreezePopup;
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Window;
 
@@ -86,16 +88,25 @@ public class GameController {
         boolean isPlayer = (current == player);
         if (code == KeyCode.W) {
             current.setPosition(Constants.WINNING_POSITION);
-            //view.movePlayer(current.getPosition(), isPlayer);
-            view.jumpPlayer(99, isPlayer);
-            refreshStats();
-            if(current.getEnergy()>=1000)
-                navigateToWin(current);
+            // Animate the token to cell 99, then show the win popup after arrival
+            view.movePlayer(99, isPlayer, () ->
+                Platform.runLater(() -> {
+                    refreshStats();
+                    if (current.getEnergy() >= 1000)
+                        navigateToWin(current);
+                })
+            );
         } else if (code == KeyCode.E) {
             current.setEnergy(1000);
             refreshStats();
             if(current.getPosition()==99)
-               navigateToWin(current); 
+               navigateToWin(current);
+        } else if (code == KeyCode.F) {
+            // Preview the freeze popup (debug shortcut)
+            Window owner = view.getScene() != null ? view.getScene().getWindow() : null;
+            Platform.runLater(() ->
+                FreezePopup.show(current.getName(), owner)
+            );
         }
     }
 

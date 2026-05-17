@@ -218,6 +218,10 @@ public class StartView extends VBox {
                 "Schemer's steal ignores shields."),
             ruleSection("Confusion",
                 "Your role flips temporarily. Wrong doors now hurt you. Wears off after a few turns."),
+            ruleSection("Freeze",
+                "A Dynamo monster's powerup can freeze your opponent, forcing them to skip their entire next turn. " +
+                "When frozen, the skipped turn is clearly shown so you don't miss it. " +
+                "The freeze lasts exactly 1 turn — then it's back to normal."),
             ruleSection("Winning",
                 "Hit Cell 99 with 1,000 or more energy. Get there short and you keep playing.")
         );

@@ -357,11 +357,9 @@ public class BoardView extends StackPane {
         // Only separate when both players are on same cell
         if (playerPos == opponentPos) {
             if (isPlayer) {
-                offsetX = -12;
-                offsetY = -6;
+                offsetX = -10;
             } else {
-                offsetX = 12;
-                offsetY = 6;
+                offsetX = 10;
             }
         }
 
