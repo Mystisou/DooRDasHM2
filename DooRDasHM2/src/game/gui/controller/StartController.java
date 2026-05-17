@@ -4,11 +4,6 @@ import game.gui.view.InstructionsView;
 import game.gui.view.StartView;
 import game.gui.view.ViewManager;
 
-/**
- * Handles all interaction on the start screen:
- * role-card selection and the START button action.
- * StartView knows nothing about game state or navigation.
- */
 public class StartController {
 
     private String selectedRole = null;

@@ -40,7 +40,6 @@ public class GameController {
         Monster p = game.getPlayer();
         Monster o = game.getOpponent();
 
-        // token photos (must be set before initial movePlayer)
         view.setTokenImage(true,  p.getName());
         view.setTokenImage(false, o.getName());
 
@@ -88,7 +87,6 @@ public class GameController {
         boolean isPlayer = (current == player);
         if (code == KeyCode.W) {
             current.setPosition(Constants.WINNING_POSITION);
-            // Animate the token to cell 99, then show the win popup after arrival
             view.movePlayer(99, isPlayer, () ->
                 Platform.runLater(() -> {
                     refreshStats();
@@ -102,15 +100,12 @@ public class GameController {
             if(current.getPosition()==99)
                navigateToWin(current);
         } else if (code == KeyCode.F) {
-            // Preview the freeze popup (debug shortcut)
             Window owner = view.getScene() != null ? view.getScene().getWindow() : null;
             Platform.runLater(() ->
                 FreezePopup.show(current.getName(), owner)
             );
         }
     }
-
-    // ── shared utilities ──────────────────────────────────────────────────────
 
     public void refreshStats() {
         Monster p = game.getPlayer();
@@ -122,8 +117,6 @@ public class GameController {
     public void setTurnState(String message, boolean isPlayerTurn) {
         view.updateLog(message);
         view.setDiceTurnIndicator(isPlayerTurn);
-        // NOTE: resetDiceLabel is NOT called here — the rolled number stays
-        // visible until the NEXT roll begins (see TurnController.handleRoll).
         view.setPowerEnabled(isPlayerTurn);
     }
 
@@ -142,7 +135,7 @@ public class GameController {
     }
 
     public void navigateToLoss(Monster winner) {
-        navigateToWin(winner);   // same popup — playerWon=false because winner != player
+        navigateToWin(winner);
     }
 
     public String buildStatus(Monster m) {

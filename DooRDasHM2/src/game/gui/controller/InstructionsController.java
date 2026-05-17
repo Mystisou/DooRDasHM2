@@ -2,10 +2,6 @@ package game.gui.controller;
 
 import game.gui.view.InstructionsView;
 
-/**
- * Handles the "ENTER THE FLOOR" button on the instructions screen.
- * Launches the game via GameLauncher when the player is ready.
- */
 public class InstructionsController {
 
     private final InstructionsView view;
@@ -22,7 +18,7 @@ public class InstructionsController {
             try {
                 GameLauncher.launch(selectedRole);
             } catch (Exception ex) {
-                // engine errors (bad CSV etc.) are rare; surface them without crashing
+                
                 view.getStartButton().setText("Error — check console");
                 ex.printStackTrace();
             }

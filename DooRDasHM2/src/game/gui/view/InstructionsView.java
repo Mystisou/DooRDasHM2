@@ -12,10 +12,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-/**
- * Instructions / board-preview screen shown before the game starts.
- * Pure UI — no game logic. InstructionsController wires the start button.
- */
 public class InstructionsView extends BorderPane {
 
     private static final String BG_DARK      = "#0d0d1a";
@@ -38,10 +34,10 @@ public class InstructionsView extends BorderPane {
         buildUI();
     }
 
-    /** Exposed so InstructionsController can wire the action handler. */
+    
     public Button getStartButton() { return startBtn; }
 
-    // ── private UI builders ──────────────────────────────────────────────────
+    
 
     private void buildUI() {
         Label title = new Label("DooR DasH");
@@ -90,7 +86,7 @@ public class InstructionsView extends BorderPane {
         applyBtnStyle(startBtn, RED_BTN);
         startBtn.setOnMouseEntered(e -> applyBtnStyle(startBtn, RED_HOVER));
         startBtn.setOnMouseExited(e  -> applyBtnStyle(startBtn, RED_BTN));
-        // action is wired by InstructionsController
+        
 
         HBox bottom = new HBox(startBtn);
         bottom.setAlignment(Pos.CENTER);
@@ -138,12 +134,12 @@ public class InstructionsView extends BorderPane {
         cell.setMinSize(49, 49);
         cell.setMaxSize(49, 49);
 
-        // 1. base tile (same as BoardView)
+        
         ImageView base = imageView("normal_tile", 49, 49);
         if (base != null) cell.getChildren().add(base);
         else cell.setStyle("-fx-background-color: " + fallbackColour(i) + ";");
 
-        // 2. cell-type overlay image (exact same keys as BoardView)
+        
         String overlayKey = overlayImageKey(i);
         if (overlayKey != null) {
             ImageView ov = imageView(overlayKey, 36, 36);
@@ -155,7 +151,7 @@ public class InstructionsView extends BorderPane {
             }
         }
 
-        // 3. index number
+        
         Label num = new Label(String.valueOf(i));
         num.setFont(font(F_INTER, 9));
         num.setStyle("-fx-text-fill: rgba(255,255,255,0.85); -fx-font-weight: bold;");
@@ -168,7 +164,7 @@ public class InstructionsView extends BorderPane {
         return cell;
     }
 
-    /** Returns the overlay image key for a cell (mirrors BoardView.overlayImageKey). */
+    
     private String overlayImageKey(int i) {
         if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "Conveyor_Belts";
         if (has(Constants.SOCK_CELL_INDICES,     i)) return "Contamination_Socks";

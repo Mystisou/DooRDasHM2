@@ -5,27 +5,19 @@ import game.gui.view.popups.AlertPopup;
 import game.gui.view.popups.FreezePopup;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- * Master game-screen layout.
- * Composes LogView, BoardView, two MonsterPanelViews, and ActionPanelView.
- * All public methods delegate to the appropriate sub-view.
- */
 public class GameView extends BorderPane {
 
     private static final String BG_DARK  = "#0d0d1a";
@@ -53,19 +45,19 @@ public class GameView extends BorderPane {
         BorderPane.setMargin(playerPanel,   new Insets(0, 8, 0, 0));
         BorderPane.setMargin(opponentPanel, new Insets(0, 0, 0, 8));
 
-        // Restore classic 5-region BorderPane — same structure as old draft.
-        // Log bar on top (full width), stat cards on sides, board in centre, action at bottom.
+        
+        
         this.setTop(logView);
         this.setLeft(playerPanel);
         this.setRight(opponentPanel);
         this.setCenter(boardView);
         this.setBottom(actionPanel);
 
-        // Wire the Review Rules button in LogView
+        
         logView.getReviewButton().setOnAction(e -> showReviewPopup());
     }
 
-    // ── board delegates ───────────────────────────────────────────────────────
+    
 
     public void movePlayer(int newPos, boolean isPlayer, Runnable onComplete) {
         boardView.movePlayer(newPos, isPlayer, onComplete);
@@ -81,7 +73,7 @@ public class GameView extends BorderPane {
     public void addMonsterNameLabel(int idx, String name)        { boardView.addMonsterNameLabel(idx, name);    }
     public void markDoorActivated(int index)                     { boardView.markDoorActivated(index);          }
 
-    // ── monster panel delegates ───────────────────────────────────────────────
+    
 
     public void updateMonsterCard(boolean isPlayer, String name, String origRole,
                                    String curRole, String type, int energy, int pos, String status) {
@@ -92,7 +84,7 @@ public class GameView extends BorderPane {
     }
     public void showEnergyDelta(boolean isPlayer, int delta) { panel(isPlayer).showEnergyDelta(delta); }
 
-    // ── action panel delegates ────────────────────────────────────────────────
+    
 
     public void setDiceTurnIndicator(boolean isPlayerTurn)  { actionPanel.setDiceTurnIndicator(isPlayerTurn); }
     public void showDiceResult(int roll)                    { actionPanel.showDiceResult(roll);               }
@@ -104,12 +96,12 @@ public class GameView extends BorderPane {
     public Button    getPowerBtn()      { return actionPanel.getPowerBtn();      }
     public ImageView getDiceImageView() { return actionPanel.getDiceImageView(); }
 
-    // ── log delegate ──────────────────────────────────────────────────────────
+    
 
-    /** Keep short: "YOUR TURN!" or "OPPONENT'S TURN!" */
+    
     public void updateLog(String message) { logView.updateLog(message); }
 
-    // ── popups ────────────────────────────────────────────────────────────────
+    
 
     public void showAlert(String title, String message) {
         AlertPopup.show(title, message, getScene() != null ? getScene().getWindow() : null);
@@ -118,7 +110,7 @@ public class GameView extends BorderPane {
         FreezePopup.show(monsterName, getScene() != null ? getScene().getWindow() : null);
     }
 
-    /** Styled "Not Enough Energy" popup matching the StartView side-selection popup. */
+    
     public void showNotEnoughEnergyPopup() {
         javafx.stage.Stage popup = new javafx.stage.Stage();
         popup.initStyle(javafx.stage.StageStyle.TRANSPARENT);
@@ -164,7 +156,7 @@ public class GameView extends BorderPane {
         popup.showAndWait();
     }
 
-    // ── review rules popup ────────────────────────────────────────────────────
+    
 
     private void showReviewPopup() {
         Stage popup = new Stage();
@@ -180,7 +172,7 @@ public class GameView extends BorderPane {
         VBox content = new VBox(10);
         content.setPadding(new Insets(2, 6, 2, 6));
 
-        // ── Cell Types ────────────────────────────────────────────────────────
+        
         Label cellHdr = new Label("CELL TYPES");
         cellHdr.setFont(font(F_BANGERS, 20));
         cellHdr.setStyle("-fx-text-fill: " + GOLD + ";");
@@ -199,7 +191,7 @@ public class GameView extends BorderPane {
         Region sep1 = new Region(); sep1.setPrefHeight(1); sep1.setMaxWidth(Double.MAX_VALUE);
         sep1.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
 
-        // ── Buttons ───────────────────────────────────────────────────────────
+        
         Label btnHdr = new Label("BUTTONS");
         btnHdr.setFont(font(F_BANGERS, 20));
         btnHdr.setStyle("-fx-text-fill: " + GOLD + ";");
@@ -209,7 +201,7 @@ public class GameView extends BorderPane {
             qcRound("energy", "Power-Up",    "Click to activate your monster's power (costs 500 energy).")
         );
 
-        // ── Power-Up details (bullet points) ─────────────────────────────────
+        
         Label powHdr = new Label("POWER-UPS");
         powHdr.setFont(font(F_BANGERS, 20));
         powHdr.setStyle("-fx-text-fill: " + GOLD + ";");
@@ -226,7 +218,7 @@ public class GameView extends BorderPane {
         Region sep2 = new Region(); sep2.setPrefHeight(1); sep2.setMaxWidth(Double.MAX_VALUE);
         sep2.setStyle("-fx-background-color: rgba(155,89,182,0.30);");
 
-        // ── Quick Rules ───────────────────────────────────────────────────────
+        
         Label rulesHdr = new Label("QUICK RULES");
         rulesHdr.setFont(font(F_BANGERS, 20));
         rulesHdr.setStyle("-fx-text-fill: " + GOLD + ";");
@@ -265,7 +257,7 @@ public class GameView extends BorderPane {
         StackPane root = new StackPane(outer); root.setClip(clip);
         root.setStyle("-fx-background-color: #0d0d1a; -fx-background-radius: 16; -fx-border-color: rgba(155,89,182,0.55); -fx-border-radius: 16; -fx-border-width: 2; -fx-effect: dropshadow(gaussian,#6c3483,26,0.32,0,0);");
 
-        // position centred on screen
+        
         Screen screen = Screen.getPrimary();
         popup.setX((screen.getVisualBounds().getWidth()  - 520) / 2);
         popup.setY((screen.getVisualBounds().getHeight() - 640) / 2);
@@ -274,7 +266,7 @@ public class GameView extends BorderPane {
         popup.showAndWait();
     }
 
-    /** Bullet-point row: coloured type name + description (no image). Used for powerups. */
+    
     private HBox qbullet(String typeName, String desc) {
         Label bullet = new Label("•");
         bullet.setFont(font(F_BANGERS, 20));
@@ -296,7 +288,7 @@ public class GameView extends BorderPane {
         return row;
     }
 
-    /** Like qc() but with a circular image — used for the Buttons section. */
+    
     private HBox qcRound(String imgKey, String name, String desc) {
         javafx.scene.image.Image img = ResourceLoader.loadImage(imgKey, 32, 32);
         javafx.scene.layout.StackPane imgBox = new javafx.scene.layout.StackPane();
@@ -316,7 +308,7 @@ public class GameView extends BorderPane {
         return row;
     }
 
-    /** Cell-type row for the review popup: small image + name + one-line description. */
+    
     private HBox qc(String imgKey, String name, String desc) {
         javafx.scene.image.Image img = ResourceLoader.loadImage(imgKey, 32, 32);
         javafx.scene.layout.StackPane imgBox = new javafx.scene.layout.StackPane();

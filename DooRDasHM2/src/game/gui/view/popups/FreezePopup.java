@@ -17,10 +17,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-/**
- * Blocking modal popup shown when a monster's turn is skipped by the Freeze effect.
- * Closing it does NOT terminate the game. 
- */
 public final class FreezePopup {
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";

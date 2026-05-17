@@ -14,11 +14,6 @@ import game.gui.view.popups.OccupiedCellPopup;
 
 import java.util.ArrayList;
 
-/**
- * Executes one complete player turn.
- * Token animation is async — the rest of the turn continues in the animation callback.
- * Uses OccupiedCellPopup (instead of a plain alert) so the player can re-roll directly.
- */
 public class TurnController {
 
     private final Game           game;
@@ -36,8 +31,6 @@ public class TurnController {
         this.cardCtrl = cardCtrl;
     }
 
-    // ── entry point ───────────────────────────────────────────────────────────
-
     public void handleRoll() {
         Monster current  = game.getCurrent();
         Monster player   = game.getPlayer();
@@ -45,11 +38,8 @@ public class TurnController {
         boolean wasFrozen = current.isFrozen();
         boolean isPlayer  = (current == player);
 
-        // Clear the previous roll's number as soon as a new roll starts
         view.resetDiceLabel(isPlayer);
 
-
-        // pre-turn snapshots
         ArrayList<Card> deckSnapshot    = new ArrayList<>(Board.cards);
         int   playerEnergyBefore        = player  .getEnergy();
         int   opponentEnergyBefore      = opponent.getEnergy();
@@ -59,11 +49,9 @@ public class TurnController {
         int   momentumBefore            = (current instanceof Dasher)       ? ((Dasher)       current).getMomentumTurns()    : 0;
         int   normalSpeedBefore         = (current instanceof MultiTasker)  ? ((MultiTasker)  current).getNormalSpeedTurns() : 0;
 
-        // execute roll
         try {
             game.playTurn();
         } catch (InvalidMoveException ex) {
-            // themed popup — Roll Again button calls handleRoll() recursively
             OccupiedCellPopup.show(
                 opponent.getName(),
                 view.getScene() != null ? view.getScene().getWindow() : null,
@@ -77,12 +65,10 @@ public class TurnController {
 
         int roll = game.getLastRoll();
 
-        // ── animate tokens, then finish turn ─────────────────────────────────
         view.clearEventText();
 
-        // Capture locals for the lambda
         final boolean  _isPlayer          = isPlayer;
-        final boolean  _wasFrozen         = wasFrozen;
+        final boolean  _wasFrozen          = wasFrozen;
         final int      _playerEnergyBefore  = playerEnergyBefore;
         final int      _opponentEnergyBefore= opponentEnergyBefore;
         final boolean  _wasPlayerShielded   = wasPlayerShielded;
@@ -97,9 +83,6 @@ public class TurnController {
 
         view.movePlayer(player.getPosition(), true,  () ->
         view.movePlayer(opponent.getPosition(), false, () ->
-            // Platform.runLater moves finishTurn OUT of the animation pulse.
-            // Without this, popup.showAndWait() throws "Nested event loops are
-            // allowed only while handling system events" in JavaFX 8.
             javafx.application.Platform.runLater(() -> finishTurn(
                 roll, _isPlayer, _wasFrozen,
                 _playerEnergyBefore, _opponentEnergyBefore,
@@ -109,8 +92,6 @@ public class TurnController {
             ))
         ));
     }
-
-    // ── post-animation turn finalization ──────────────────────────────────────
 
     private void finishTurn(
             int roll, boolean isPlayer, boolean wasFrozen,
@@ -136,7 +117,6 @@ public class TurnController {
             if (playerDelta   != 0) view.showEnergyDelta(true,  playerDelta);
             if (opponentDelta != 0) view.showEnergyDelta(false, opponentDelta);
 
-
             int effectiveRoll = cellCtrl.computeEffectiveRoll(current, roll, momentumBefore, normalSpeedBefore);
             int rolledPos     = (posBefore + effectiveRoll) % Constants.BOARD_SIZE;
             game.engine.cells.Cell rolledCell = game.getBoard().getCell(rolledPos);
@@ -154,10 +134,8 @@ public class TurnController {
                 view.getScene() != null ? view.getScene().getWindow() : null);
         }
 
-        // show event text in the action panel
         view.updateEventText(eventMsg);
 
-        // win check
         Monster winner = game.getWinner();
         if (winner != null) {
             if (winner == game.getPlayer()) gameCtrl.navigateToWin(winner);
@@ -165,7 +143,6 @@ public class TurnController {
             return;
         }
 
-        // end-of-turn — log only shows whose turn it is
         boolean isPlayerTurnNext = (game.getCurrent() == player);
         gameCtrl.setTurnState(
             isPlayerTurnNext ? "YOUR TURN!" : "OPPONENT'S TURN!",

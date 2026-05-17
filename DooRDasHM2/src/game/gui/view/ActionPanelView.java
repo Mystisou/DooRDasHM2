@@ -14,14 +14,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-/**
- * Bottom action bar layout (left → right):
- *
- *   [ VBox: Cards remaining (big) / Roll result (bold yellow) ]
- *   [ Event log label (wide) ]
- *   [ Dice image (click to roll) ]
- *   [ Player photo (click to activate power) ]
- */
 public class ActionPanelView extends HBox {
 
     private static final String BG_DARK   = "#0d0d1a";
@@ -34,22 +26,17 @@ public class ActionPanelView extends HBox {
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
-    // exposed to GameController
-    private Button    powerBtn;          // invisible trigger, wired by controller
-    private ImageView diceImageView;     // click target for rolling
-    private StackPane diceWrapper;       // glow applied here
+    private Button powerBtn;
+    private ImageView diceImageView;
+    private StackPane diceWrapper;
 
-    // state labels
-    private Label cardsNumLabel;         // the big "25" count
-    private Label rollNumLabel;          // the bold yellow rolled number
-    private Label eventLogLabel;         // describes what happened
+    private Label cardsNumLabel;
+    private Label rollNumLabel;
+    private Label eventLogLabel;
 
-    // photo pane for the player
     private StackPane photoPowerPane;
 
     public ActionPanelView() { build(); }
-
-    // ── public update API ────────────────────────────────────────────────────
 
     public void showDiceResult(int roll) {
         rollNumLabel.setText(String.valueOf(roll));
@@ -61,7 +48,7 @@ public class ActionPanelView extends HBox {
     }
 
     public void updateEventText(String text) { eventLogLabel.setText(text); }
-    public void clearEventText()             { eventLogLabel.setText(""); }
+    public void clearEventText()              { eventLogLabel.setText(""); }
 
     public void updateCardPileCount(int remaining) {
         cardsNumLabel.setText(String.valueOf(remaining));
@@ -92,7 +79,6 @@ public class ActionPanelView extends HBox {
             "-fx-cursor: hand;"
         );
 
-        // Always show the energy image (not the monster photo)
         Image energyImg = ResourceLoader.loadImage("energy", 56, 56);
         if (energyImg != null) {
             ImageView iv = new ImageView(energyImg);
@@ -111,8 +97,6 @@ public class ActionPanelView extends HBox {
 
     public Button    getPowerBtn()      { return powerBtn;      }
     public ImageView getDiceImageView() { return diceImageView; }
-
-    // ── layout ───────────────────────────────────────────────────────────────
 
     private void build() {
         HBox leftCol = buildLeftInfoCol();
@@ -165,9 +149,7 @@ public class ActionPanelView extends HBox {
         );
     }
 
-    /** Left section: "CARDS LEFT" and "ROLLED" boxes side by side (not stacked). */
     private HBox buildLeftInfoCol() {
-        // ── cards remaining ───────────────────────────────────────────────────
         Label cardsTitle = new Label("CARDS");
         cardsTitle.setFont(font(F_PIXEL, 6));
         cardsTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.85;");
@@ -187,7 +169,6 @@ public class ActionPanelView extends HBox {
             "-fx-border-width: 1.5;"
         );
 
-        // ── rolled number ─────────────────────────────────────────────────────
         Label rolledTitle = new Label("ROLLED");
         rolledTitle.setFont(font(F_PIXEL, 6));
         rolledTitle.setStyle("-fx-text-fill: " + TEXT_DIM + "; -fx-opacity: 0.85;");
@@ -207,7 +188,6 @@ public class ActionPanelView extends HBox {
             "-fx-border-width: 1.5;"
         );
 
-        // ── side by side ──────────────────────────────────────────────────────
         HBox row = new HBox(8, cardsBox, rollBox);
         row.setAlignment(Pos.CENTER);
         return row;
@@ -215,4 +195,3 @@ public class ActionPanelView extends HBox {
 
     private Font font(String path, double size) { return ResourceLoader.font(path, size); }
 }
-

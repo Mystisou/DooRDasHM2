@@ -7,14 +7,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -25,13 +21,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-/**
- * Modal end-game popup — replaces WinView and LossView.
- *
- * Shows over the current game screen (no scene swap, no flicker).
- * Crown watermark for a win, skull for a loss.
- * Winner card: gold highlights + glow. Loser card: grey + dimmed overlay.
- */
 public final class EndGamePopup {
 
     private static final double W = 600;
@@ -46,17 +35,7 @@ public final class EndGamePopup {
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
-    /**
-     * @param playerWon      true if the human player won
-     * @param playerName     player's monster name
-     * @param playerRole     player's role string
-     * @param playerEnergy   player's final energy
-     * @param opponentName   opponent's monster name
-     * @param opponentRole   opponent's role string
-     * @param opponentEnergy opponent's final energy
-     * @param owner          owning window (may be null)
-     * @param onReturn       called after the popup closes when "Return" is clicked
-     */
+    
     public static void show(
             boolean playerWon,
             String  playerName,   String playerRole,   int playerEnergy,
@@ -70,7 +49,7 @@ public final class EndGamePopup {
         if (owner != null) popup.initOwner(owner);
         popup.setResizable(false);
 
-        // ── title ─────────────────────────────────────────────────────────────
+        
         String titleText  = playerWon ? "YOU WON!" : "YOU LOST!";
         String titleColor = playerWon ? GOLD : RED;
 
@@ -81,7 +60,7 @@ public final class EndGamePopup {
             "-fx-effect: dropshadow(gaussian," + titleColor + ",10,0.18,0,1);"
         );
 
-        // ── subtitle ──────────────────────────────────────────────────────────
+        
         String sub = playerWon
             ? "The Floor is yours. Monstropolis will never forget this day."
             : "The Floor shows no mercy. Return, recharge, and try again.";
@@ -93,21 +72,21 @@ public final class EndGamePopup {
         subLbl.setAlignment(Pos.CENTER);
         subLbl.setTextAlignment(TextAlignment.CENTER);
 
-        // ── character cards ───────────────────────────────────────────────────
+        
         VBox playerCard   = buildCharCard(playerName,   playerRole,   playerEnergy,   playerWon,  true);
         VBox opponentCard = buildCharCard(opponentName, opponentRole, opponentEnergy, !playerWon, false);
 
         HBox cardsRow = new HBox(24, playerCard, opponentCard);
         cardsRow.setAlignment(Pos.CENTER);
 
-        // ── divider ───────────────────────────────────────────────────────────
+        
         Region divider = new Region();
         divider.setPrefHeight(1);
         divider.setMaxWidth(480);
         divider.setStyle("-fx-background-color: " +
             (playerWon ? "rgba(241,196,15,0.25)" : "rgba(231,76,60,0.20)") + ";");
 
-        // ── return button ─────────────────────────────────────────────────────
+        
         String btnBase  = playerWon ? "#b8860b" : "#4a5568";
         String btnHover = playerWon ? GOLD       : "#636e72";
 
@@ -119,7 +98,7 @@ public final class EndGamePopup {
         returnBtn.setOnMouseExited(e  -> applyBtn(returnBtn, btnBase,  true));
         returnBtn.setOnAction(e -> { popup.close(); onReturn.run(); });
 
-        // ── assemble ──────────────────────────────────────────────────────────
+        
         VBox content = new VBox(10, titleLbl, subLbl, divider, cardsRow, returnBtn);
         content.setAlignment(Pos.CENTER);
         content.setPadding(new Insets(28, 32, 24, 32));
@@ -152,7 +131,7 @@ public final class EndGamePopup {
         popup.showAndWait();
     }
 
-    // ── character card ────────────────────────────────────────────────────────
+    
 
     private static VBox buildCharCard(
             String name, String role, int energy,
@@ -162,7 +141,7 @@ public final class EndGamePopup {
         String textColor   = isWinner ? "#ecf0f1" : "#7f8c8d";
         String energyColor = isWinner ? "#2ecc71" : DIM;
 
-        // ── round photo ───────────────────────────────────────────────────────
+        
         StackPane photoPane = new StackPane();
         photoPane.setMinSize(86, 86);
         photoPane.setMaxSize(86, 86);
@@ -182,7 +161,7 @@ public final class EndGamePopup {
             iv.setClip(new Circle(40, 40, 40));
             photoPane.getChildren().add(iv);
 
-            // grey dim overlay for loser
+            
             if (!isWinner) {
                 Circle dimCircle = new Circle(40);
                 dimCircle.setFill(Color.web("#0d0d1a", 0.52));
@@ -195,7 +174,7 @@ public final class EndGamePopup {
             photoPane.getChildren().add(fb);
         }
 
-        // ── winner / loser badge ──────────────────────────────────────────────
+        
         Label badge = new Label(isWinner ? "WINNER" : "LOSER");
         badge.setFont(font(F_PIXEL, 6));
         badge.setStyle(
@@ -205,12 +184,12 @@ public final class EndGamePopup {
             "-fx-padding: 3 8;"
         );
 
-        // ── you / opponent label ──────────────────────────────────────────────
+        
         Label youLbl = new Label(isYou ? "YOU" : "OPPONENT");
         youLbl.setFont(font(F_BANGERS, 13));
         youLbl.setStyle("-fx-text-fill: " + textColor + ";");
 
-        // ── monster name ──────────────────────────────────────────────────────
+        
         Label nameLbl = new Label(name);
         nameLbl.setFont(font(F_BANGERS, 19));
         nameLbl.setStyle("-fx-text-fill: " + accentColor + ";");
@@ -219,17 +198,17 @@ public final class EndGamePopup {
         nameLbl.setAlignment(Pos.CENTER);
         nameLbl.setTextAlignment(TextAlignment.CENTER);
 
-        // ── role ──────────────────────────────────────────────────────────────
+        
         Label roleLbl = new Label(role);
         roleLbl.setFont(font(F_INTER, 11));
         roleLbl.setStyle("-fx-text-fill: " + textColor + "; -fx-opacity: 0.85;");
 
-        // ── energy ────────────────────────────────────────────────────────────
+        
         Label energyLbl = new Label(energy + " energy");
         energyLbl.setFont(font(F_BANGERS, 16));
         energyLbl.setStyle("-fx-text-fill: " + energyColor + ";");
 
-        // ── assemble card ─────────────────────────────────────────────────────
+        
         VBox card = new VBox(5, photoPane, badge, youLbl, nameLbl, roleLbl, energyLbl);
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(14, 18, 14, 18));
@@ -245,7 +224,7 @@ public final class EndGamePopup {
         return card;
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
+    
 
     private static void applyBtn(Button btn, String color, boolean dark) {
         btn.setStyle(

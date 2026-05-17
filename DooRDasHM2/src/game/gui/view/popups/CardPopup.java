@@ -23,16 +23,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-/**
- * Card-drawn popup: card title, rounded photo with rarity glow, effect description, Got it! button.
- *
- * Rarity glow (fewer copies in pile = rarer = more valuable colour):
- *   Mega Drain (×1)       → gold   #f1c40f
- *   Sneaky/Code/Total (×2) → orange #e67e22
- *   Small/2319/Mind (×3)  → purple #9b59b6
- *   Position Swap (×4)    → green  #27ae60
- *   Super Shield (×5)     → blue   #3498db
- */
 public final class CardPopup {
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
@@ -49,7 +39,7 @@ public final class CardPopup {
         if (owner != null) popup.initOwner(owner);
         popup.setResizable(false);
 
-        // ── card image ────────────────────────────────────────────────────────
+        
         StackPane imgPane = new StackPane();
         imgPane.setPrefSize(160, 160);
         imgPane.setMaxSize(160, 160);
@@ -68,7 +58,7 @@ public final class CardPopup {
             imgPane.getChildren().add(fb);
         }
 
-        // Glowing border frame around image
+        
         Rectangle border = new Rectangle(154, 154);
         border.setFill(Color.TRANSPARENT);
         border.setStroke(Color.web(rarityColor));
@@ -79,7 +69,7 @@ public final class CardPopup {
         border.setEffect(glow);
         imgPane.getChildren().add(border);
 
-        // ── rarity badge ──────────────────────────────────────────────────────
+        
         Label rarityBadge = new Label(rarityLabel);
         rarityBadge.setFont(font(F_PIXEL, 7));
         rarityBadge.setStyle(
@@ -92,17 +82,17 @@ public final class CardPopup {
             "-fx-border-width: 1;"
         );
 
-        // ── card title ────────────────────────────────────────────────────────
+        
         Label titleLbl = new Label(card.getName().toUpperCase());
         titleLbl.setFont(font(F_BANGERS, 30));
         titleLbl.setStyle("-fx-text-fill: white;");
 
-        // ── drawn by label ────────────────────────────────────────────────────
+        
         Label drawnLbl = new Label((drawnByPlayer ? "You drew" : "Opponent drew") + " a card!");
         drawnLbl.setFont(font(F_INTER, 12));
         drawnLbl.setStyle("-fx-text-fill: #95a5a6;");
 
-        // ── effect description ────────────────────────────────────────────────
+        
         Label descLbl = new Label(effectDescription(card));
         descLbl.setFont(font(F_INTER, 13));
         descLbl.setStyle("-fx-text-fill: #ecf0f1; -fx-line-spacing: 2;");
@@ -111,7 +101,7 @@ public final class CardPopup {
         descLbl.setAlignment(Pos.CENTER);
         descLbl.setTextAlignment(TextAlignment.CENTER);
 
-        // ── got it button ─────────────────────────────────────────────────────
+        
         Button gotItBtn = new Button("GOT IT!");
         gotItBtn.setFont(font(F_PIXEL, 9));
         gotItBtn.setPrefSize(180, 42);
@@ -149,7 +139,7 @@ public final class CardPopup {
         popup.showAndWait();
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
+    
 
     public static String effectDescription(Card card) {
         String n = card.getName();
@@ -181,11 +171,11 @@ public final class CardPopup {
 
     private static String rarityColor(Card card) {
         String n = card.getName();
-        if (n.contains("Mega"))                                               return "#f1c40f"; // gold — rarest ×1
-        if (n.contains("Sneaky") || n.contains("Contamination") || n.contains("Total")) return "#e67e22"; // orange ×2
-        if (n.contains("Small")  || n.contains("2319")          || n.contains("Mind"))  return "#9b59b6"; // purple ×3
-        if (n.contains("Position"))                                           return "#27ae60"; // green ×4
-        return "#3498db"; // blue — most common ×5 (Shield)
+        if (n.contains("Mega"))                                               return "#f1c40f"; 
+        if (n.contains("Sneaky") || n.contains("Contamination") || n.contains("Total")) return "#e67e22"; 
+        if (n.contains("Small")  || n.contains("2319")          || n.contains("Mind"))  return "#9b59b6"; 
+        if (n.contains("Position"))                                           return "#27ae60"; 
+        return "#3498db"; 
     }
 
     private static String rarityLabel(Card card) {

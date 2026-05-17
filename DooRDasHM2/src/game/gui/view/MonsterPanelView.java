@@ -38,7 +38,7 @@ public class MonsterPanelView extends VBox {
         build();
     }
 
-    // ── public update API ────────────────────────────────────────────────────
+    
 
     public void update(String name, String origRoleStr, String curRoleStr,
                        String typeStr, int energyVal, int position, String statusStr) {
@@ -79,7 +79,7 @@ public class MonsterPanelView extends VBox {
         else deltaLbl.setText("");
     }
 
-    // ── private builders ─────────────────────────────────────────────────────
+    
 
     private void build() {
         photoPane = new StackPane();
@@ -124,7 +124,7 @@ public class MonsterPanelView extends VBox {
         deltaLbl.setAlignment(Pos.CENTER);
         deltaLbl.setMaxWidth(Double.MAX_VALUE);
 
-        // energy bar
+        
         StackPane energyBar = buildEnergyBar();
 
         Region divider = new Region();
@@ -159,7 +159,7 @@ public class MonsterPanelView extends VBox {
 
         energyBarFg = new Rectangle(0, 10);
         energyBarFg.setArcWidth(6); energyBarFg.setArcHeight(6);
-        energyBarFg.setFill(Color.web("#2ecc71")); // will update dynamically
+        energyBarFg.setFill(Color.web("#2ecc71")); 
 
         StackPane bar = new StackPane(bg, energyBarFg);
         StackPane.setAlignment(energyBarFg, Pos.CENTER_LEFT);
@@ -171,7 +171,7 @@ public class MonsterPanelView extends VBox {
     private void updateEnergyBar(int energy) {
         double pct = Math.max(0, Math.min(1.0, energy / (double) WIN_ENERGY));
         energyBarFg.setWidth(BAR_W * pct);
-        // colour: red → yellow → green
+        
         if (pct < 0.33)      energyBarFg.setFill(Color.web("#e74c3c"));
         else if (pct < 0.66) energyBarFg.setFill(Color.web("#f39c12"));
         else                  energyBarFg.setFill(Color.web("#2ecc71"));

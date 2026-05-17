@@ -116,7 +116,7 @@ public class StartView extends VBox {
         popup.showAndWait();
     }
 
-    // ── main layout ──────────────────────────────────────────────────────────
+    
 
     private void build() {
         Label title = new Label("DooR DasH");
@@ -176,7 +176,7 @@ public class StartView extends VBox {
         return box;
     }
 
-    // ── how to play popup ────────────────────────────────────────────────────
+    
 
     private void showHowToPlayPopup() {
         Stage popup = new Stage();
@@ -255,7 +255,7 @@ public class StartView extends VBox {
         popup.setScene(scene); popup.showAndWait();
     }
 
- // ── monster types section — 2x2 grid, two overlapping images per type ────────
+ 
 
     private VBox buildMonsterTypesSection() {
         Label titleLbl = new Label("Monster Types");
@@ -270,11 +270,11 @@ public class StartView extends VBox {
         intro.setStyle("-fx-text-fill: " + TEXT_MAIN + ";");
         intro.setWrapText(true);
 
-        // Two monsters per type:
-        //   Dasher      → Mike_Wazowski  + Fungus
-        //   Dynamo      → James_Sullivan + Yeti
-        //   Multitasker → Celia_Mae      + Roz
-        //   Schemer     → Randall_Boggs  + Henry_Waternoose
+        
+        
+        
+        
+        
         String[][] monsters = {
             { "Mike_Wazowski",  "Fungus",            "#00bcd4", "Dasher",
               "Moves at 2x speed. Powerup pushes that to 3x for 3 turns." },
@@ -295,11 +295,11 @@ public class StartView extends VBox {
         for (int i = 0; i < monsters.length; i++) {
             grid.add(
                 buildMonsterCard(
-                    monsters[i][0], // front image (left / in front)
-                    monsters[i][1], // back image  (right / behind)
-                    monsters[i][2], // accent colour
-                    monsters[i][3], // type name
-                    monsters[i][4]  // description
+                    monsters[i][0], 
+                    monsters[i][1], 
+                    monsters[i][2], 
+                    monsters[i][3], 
+                    monsters[i][4]  
                 ),
                 i % 2, i / 2
             );
@@ -317,11 +317,7 @@ public class StartView extends VBox {
         return section;
     }
 
-    /**
-     * One monster-type card.
-     * frontKey / backKey are image resource names — the front image sits on the
-     * left and is rendered on top; the back image peeks out from the right side.
-     */
+    
     private VBox buildMonsterCard(String frontKey, String backKey,
                                    String accentColor, String name, String desc) {
 
@@ -354,30 +350,23 @@ public class StartView extends VBox {
         return card;
     }
 
-    /**
-     * Builds a Pane containing two overlapping circular images.
-     * The front image is on the LEFT and rendered on top.
-     * The back image peeks out from the RIGHT, slightly behind.
-     *
-     *   [ front ]
-     *        [ back ]   ← shifted right by OFFSET px
-     */
+    
     private Pane buildOverlappingImages(String frontKey, String backKey,
                                                              String accentColor) {
-        final int IMG_SIZE = 74;   // diameter of each circle
-        final int OFFSET   = 54;   // how far the back image is shifted to the right
+        final int IMG_SIZE = 74;   
+        final int OFFSET   = 54;   
 
         Pane pane = new Pane();
         pane.setPrefSize(IMG_SIZE + OFFSET, IMG_SIZE);
         pane.setMaxSize(IMG_SIZE + OFFSET, IMG_SIZE);
         pane.setMinSize(IMG_SIZE + OFFSET, IMG_SIZE);
 
-        // back image — right side, rendered first so it sits behind
+        
         StackPane backPane = makeSingleCircleImage(backKey, IMG_SIZE, accentColor, 0.55);
         backPane.setLayoutX(OFFSET);
         backPane.setLayoutY(0);
 
-        // front image — left side, rendered last so it sits in front
+        
         StackPane frontPane = makeSingleCircleImage(frontKey, IMG_SIZE, accentColor, 0.90);
         frontPane.setLayoutX(0);
         frontPane.setLayoutY(0);
@@ -386,10 +375,7 @@ public class StartView extends VBox {
         return pane;
     }
 
-    /**
-     * A single circular image with a glowing coloured border.
-     * borderAlpha controls the border opacity so the back image looks further away.
-     */
+    
     private StackPane makeSingleCircleImage(String imgKey, int size, String accentColor,
                                              double borderAlpha) {
         int radius = size / 2;
@@ -412,7 +398,7 @@ public class StartView extends VBox {
             pane.getChildren().add(bg);
         }
 
-        // glowing border ring drawn on top of the image
+        
         Circle border = new Circle(radius);
         border.setFill(Color.TRANSPARENT);
         border.setStroke(Color.web(accentColor, borderAlpha));
@@ -423,7 +409,7 @@ public class StartView extends VBox {
         return pane;
     }
 
-    // ── card cells section — 3x3 grid ────────────────────────────────────────
+    
 
     private VBox buildCardCellsSection() {
         Label titleLbl = new Label("Card Cells");
@@ -431,10 +417,10 @@ public class StartView extends VBox {
         Label intro = new Label("Land on a card cell and draw from the shuffled pile. The effect hits both players — lucky or not depends on the draw.");
         intro.setFont(font(F_INTER, 12)); intro.setStyle("-fx-text-fill: " + TEXT_MAIN + ";"); intro.setWrapText(true);
 
-        // Suggested images from your existing assets:
-        //   scarer_door → Position Swap   |  sock → start-over cards
-        //   energy      → steal cards     |  shield → Super Shield
-        //   confusion   → confusion cards
+        
+        
+        
+        
         String[][] cards = {
             { "Position_Swap",      "#3498db", "Position Swap",      "Swap places (only if you're behind)"  },
             { "Contamination_Code", "#e74c3c", "Contamination Code", "You go back to Cell 0"                 },
@@ -485,7 +471,7 @@ public class StartView extends VBox {
         return tile;
     }
 
-    // ── generic rule section ─────────────────────────────────────────────────
+    
 
     private VBox ruleSection(String title, String body) {
         Label titleLbl = new Label(title); titleLbl.setFont(font(F_BANGERS, 20)); titleLbl.setStyle("-fx-text-fill: " + GOLD + ";");
@@ -497,7 +483,7 @@ public class StartView extends VBox {
         return section;
     }
 
-    // ── side cards ────────────────────────────────────────────────────────────
+    
 
     private HBox buildSideCards() {
         scarerCard  = buildRoleCard("SCARER",  "Masters of fear. Drain opponents\nwith every step you take.", SCARER_BLUE, "scarer");

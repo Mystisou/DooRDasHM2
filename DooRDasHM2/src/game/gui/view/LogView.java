@@ -9,11 +9,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-/**
- * Top bar.
- * The turn label is PERFECTLY centred in the full scene width using StackPane.
- * The "Review Rules" button sits at the far right with 60 px clearance for the X.
- */
 public class LogView extends VBox {
 
     private static final String GOLD  = "#f1c40f";
@@ -46,7 +41,7 @@ public class LogView extends VBox {
         reviewBtn.setOnMouseEntered(e -> styleReviewBtn(true));
         reviewBtn.setOnMouseExited(e  -> styleReviewBtn(false));
 
-        // StackPane: logLabel perfectly centred, reviewBtn right-aligned with padding
+        
         StackPane bar = new StackPane(logLabel, reviewBtn);
         StackPane.setAlignment(logLabel,    Pos.CENTER);
         StackPane.setAlignment(reviewBtn,   Pos.CENTER_RIGHT);

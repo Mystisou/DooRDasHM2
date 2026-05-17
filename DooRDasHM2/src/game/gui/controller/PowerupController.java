@@ -5,10 +5,6 @@ import game.engine.exceptions.GameActionException;
 import game.engine.exceptions.OutOfEnergyException;
 import game.gui.view.GameView;
 
-/**
- * Handles the "ACTIVATE POWER" button.
- * Calls game.usePowerup(), catches engine exceptions, and refreshes the view.
- */
 public class PowerupController {
 
     private final Game           game;

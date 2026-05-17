@@ -9,7 +9,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -27,27 +26,22 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-/**
- * 10×10 game board.
- * Each cell = base normal_tile + rounded-rect cell-type overlay with glow accent.
- * Player tokens are circular photos that slide along the zigzag path.
- */
 public class BoardView extends StackPane {
 
     private static final int    CELL_SIZE   = 50;
-    private static final int    OVERLAY_SZ  = 37;  // overlay image size inside cell
+    private static final int    OVERLAY_SZ  = 37;  
     private static final int    TOKEN_SIZE  = 32;
-    private static final int    STEP_MS     = 120;  // ms per cell in animation
+    private static final int    STEP_MS     = 120;  
 
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
     private static final String F_PIXEL   = "resources/fonts/PressStart2P-Regular.ttf";
     private static final String GOLD      = "#f1c40f";
 
     private final GridPane    gameBoard   = new GridPane();
-    private final Pane        overlayPane = new Pane();        // tokens live here
+    private final Pane        overlayPane = new Pane();        
     private final StackPane[] cells       = new StackPane[100];
 
-    // tokens
+    
     private final StackPane playerToken   = new StackPane();
     private final StackPane opponentToken = new StackPane();
     private int   playerPos   = 0;
@@ -55,7 +49,7 @@ public class BoardView extends StackPane {
     private String playerImgKey   = null;
     private String opponentImgKey = null;
 
-    // exhausted door tracker
+    
     private final boolean[] doorExhausted = new boolean[100];
 
     public BoardView() {
@@ -67,19 +61,16 @@ public class BoardView extends StackPane {
         overlayPane.prefHeightProperty().bind(this.heightProperty());
     }
 
-    // ── public API ────────────────────────────────────────────────────────────
+    
 
-    /** Set the monster photo key used for this player's board token. */
+    
     public void setTokenImage(boolean isPlayer, String monsterName) {
         if (isPlayer) playerImgKey = monsterName;
         else           opponentImgKey = monsterName;
         rebuildToken(isPlayer);
     }
 
-    /**
-     * Animate the token along the zigzag path to newPos.
-     * onComplete is called once the last step finishes.
-     */
+    
     public void movePlayer(int newPos, boolean isPlayer, Runnable onComplete) {
         int from = isPlayer ? playerPos : opponentPos;
         if (isPlayer) playerPos = newPos; else opponentPos = newPos;
@@ -92,7 +83,7 @@ public class BoardView extends StackPane {
         animateAlongPath(token, path, 0, onComplete);
     }
 
-    /** Backward compat (no callback). */
+    
     public void movePlayer(int newPos, boolean isPlayer) {
         movePlayer(newPos, isPlayer, null);
     }
@@ -129,17 +120,17 @@ public class BoardView extends StackPane {
         doorExhausted[index] = true;
         StackPane cell = cells[index];
 
-        // remove existing overlay pane (second child after base tile)
+        
         cell.getChildren().removeIf(n -> "overlay".equals(n.getId()));
 
-        // grey / dark-purple translucent overlay
+        
         Rectangle exhaustOverlay = new Rectangle(CELL_SIZE, CELL_SIZE);
         exhaustOverlay.setFill(Color.web("#2d1b4e", 0.72));
         exhaustOverlay.setArcWidth(6); exhaustOverlay.setArcHeight(6);
         exhaustOverlay.setId("overlay");
         cell.getChildren().add(exhaustOverlay);
 
-        // small "used" label
+        
         Label used = new Label("USED");
         used.setFont(font(F_PIXEL, 5));
         used.setStyle("-fx-text-fill: rgba(255,255,255,0.55);");
@@ -148,7 +139,7 @@ public class BoardView extends StackPane {
         cell.getChildren().add(used);
     }
 
-    // ── grid construction ─────────────────────────────────────────────────────
+    
 
     private void buildGrid() {
         gameBoard.setAlignment(Pos.CENTER);
@@ -176,12 +167,12 @@ public class BoardView extends StackPane {
         cell.setMinSize(CELL_SIZE, CELL_SIZE);
         cell.setMaxSize(CELL_SIZE, CELL_SIZE);
 
-        // 1. base tile
+        
         ImageView base = iv("normal_tile", CELL_SIZE, CELL_SIZE);
         if (base != null) cell.getChildren().add(base);
         else              cell.setStyle("-fx-background-color: #1a1a2e;");
 
-        // 2. cell-type overlay (rounded rect + glow)
+        
         String overlayKey = overlayImageKey(i);
         if (overlayKey != null) {
             StackPane op = buildOverlay(overlayKey, i);
@@ -189,10 +180,10 @@ public class BoardView extends StackPane {
             cell.getChildren().add(op);
         }
 
-        // 3. start / end badge
+        
         if (i == 0 || i == 99) addBadge(cell, i == 0 ? "START" : "END", i == 0 ? "#16a085" : "#f39c12");
 
-        // 4. cell number
+        
         Label num = new Label(String.valueOf(i));
         num.setFont(font(F_INTER, 9));
         num.setStyle("-fx-text-fill: rgba(255,255,255,0.75); -fx-font-weight: bold;");
@@ -203,10 +194,7 @@ public class BoardView extends StackPane {
         return cell;
     }
 
-    /**
-     * Replaces the monster image overlay on a monster cell with the correct monster photo.
-     * Call this after the game is initialized and you know which monster is at each cell.
-     */
+    
     public void setMonsterCellImage(int cellIdx, String monsterName) {
         if (outOfRange(cellIdx)) return;
         StackPane cell = cells[cellIdx];
@@ -214,12 +202,12 @@ public class BoardView extends StackPane {
         String imgKey = monsterNameToImageKey(monsterName);
         StackPane op = buildOverlay(imgKey, cellIdx);
         op.setId("type-overlay");
-        // insert after base tile; guard against empty children list
+        
         int insertAt = cell.getChildren().isEmpty() ? 0 : 1;
         cell.getChildren().add(insertAt, op);
     }
 
-    /** Converts a full monster name (e.g. "James P. Sullivan") to the image file key. */
+    
     private String monsterNameToImageKey(String name) {
         if (name.contains("Sullivan"))   return "James_Sullivan";
         if (name.contains("Wazowski"))   return "Mike_Wazowski";
@@ -229,7 +217,7 @@ public class BoardView extends StackPane {
         if (name.contains("Roz"))        return "Roz";
         if (name.contains("Fungus"))     return "Fungus";
         if (name.contains("Yeti"))       return "Yeti";
-        return name; // fallback: use as-is
+        return name; 
     }
 
     private StackPane buildOverlay(String imgKey, int cellIndex) {
@@ -250,7 +238,7 @@ public class BoardView extends StackPane {
             pane.getChildren().add(img);
         }
 
-        // Rounded border with glow
+        
         Rectangle border = new Rectangle(OVERLAY_SZ, OVERLAY_SZ);
         border.setFill(Color.TRANSPARENT);
         border.setStroke(Color.web(glowColor, isDoor ? 0.90 : 0.65));
@@ -271,7 +259,7 @@ public class BoardView extends StackPane {
         cell.getChildren().add(l);
     }
 
-    // ── token setup ───────────────────────────────────────────────────────────
+    
 
     private void placeTokens() {
         rebuildToken(true);
@@ -321,7 +309,7 @@ public class BoardView extends StackPane {
             overlayPane.getChildren().add(token);
     }
 
-    // ── animation ─────────────────────────────────────────────────────────────
+    
 
     private void animateAlongPath(StackPane token, List<Integer> path, int step, Runnable onComplete) {
         if (step >= path.size()) {
@@ -354,7 +342,7 @@ public class BoardView extends StackPane {
         double offsetX = 0;
         double offsetY = 0;
 
-        // Only separate when both players are on same cell
+        
         if (playerPos == opponentPos) {
             if (isPlayer) {
                 offsetX = -10;
@@ -372,7 +360,7 @@ public class BoardView extends StackPane {
         StackPane cell = cells[cellIndex];
         try {
             Bounds gridBounds = gameBoard.localToParent(gameBoard.getBoundsInLocal());
-            Bounds cellBounds = cell.getBoundsInParent();      // relative to GridPane
+            Bounds cellBounds = cell.getBoundsInParent();      
             double cx = gridBounds.getMinX() + gameBoard.getPadding().getLeft()  + cellBounds.getMinX() + cellBounds.getWidth()  / 2 - TOKEN_SIZE / 2.0;
             double cy = gridBounds.getMinY() + gameBoard.getPadding().getTop()   + cellBounds.getMinY() + cellBounds.getHeight() / 2 - TOKEN_SIZE / 2.0;
             return new Point2D(cx, cy);
@@ -386,7 +374,7 @@ public class BoardView extends StackPane {
         return path;
     }
 
-    // ── image / glow helpers ──────────────────────────────────────────────────
+    
 
     private String overlayImageKey(int i) {
         if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "Conveyor_Belts";
@@ -394,19 +382,19 @@ public class BoardView extends StackPane {
         if (has(Constants.CARD_CELL_INDICES,     i)) return "Card_Cell";
         if (has(Constants.MONSTER_CELL_INDICES,  i)) return monsterImgForCellIndex(i);
         if (i % 2 == 1) return (i / 2) % 2 == 0 ? "red_door" : "purple_door";
-        return null; // normal cell
+        return null; 
     }
 
     private String glowColor(int i) {
-        if (i % 2 == 1) return (i / 2) % 2 == 0 ? "#e91e63" : "#9c27b0"; // magenta / purple
-        if (has(Constants.MONSTER_CELL_INDICES,  i)) return "#00bcd4"; // cyan
-        if (has(Constants.CARD_CELL_INDICES,     i)) return "#009688"; // teal
-        if (has(Constants.SOCK_CELL_INDICES,     i)) return "#ff5722"; // orange
-        if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "#7c4dff"; // violet
+        if (i % 2 == 1) return (i / 2) % 2 == 0 ? "#e91e63" : "#9c27b0"; 
+        if (has(Constants.MONSTER_CELL_INDICES,  i)) return "#00bcd4"; 
+        if (has(Constants.CARD_CELL_INDICES,     i)) return "#009688"; 
+        if (has(Constants.SOCK_CELL_INDICES,     i)) return "#ff5722"; 
+        if (has(Constants.CONVEYOR_CELL_INDICES, i)) return "#7c4dff"; 
         return "transparent";
     }
 
-    /** Cycle through the 6 remaining monster images for the 6 monster cells. */
+    
     private String monsterImgForCellIndex(int cellIndex) {
         String[] imgs = { "James_Sullivan","Mike_Wazowski","Randall_Boggs","Celia_Mae","Roz","Fungus" };
         int[] monsterCells = Constants.MONSTER_CELL_INDICES;

@@ -17,15 +17,12 @@ public final class ResourceLoader {
     private static final String F_INTER   = "resources/fonts/Inter-VariableFont_opsz,wght.ttf";
 
     public static void preload() {
-        // Register each font file once — after this, Font.loadFont() reads the
-        // already-registered family and skips the disk read.
+       
         warmFont(F_BANGERS, 12);
         warmFont(F_PIXEL,   12);
         warmFont(F_INTER,   12);
 
-        // Pre-decode the 7 distinct board-cell images at the two sizes used by
-        // GameView (53 px) and InstructionsView (49 px).  These were the worst
-        // offender: loadImage called 100× per screen, same 7 files every time.
+      
         String[] boardImages = {
             "normal_tile", "red_door", "purple_door",
             "Conveyor_Belts", "Contamination_Socks", "Card_Cell",
@@ -36,7 +33,6 @@ public final class ResourceLoader {
             fetchAndCache(name, 49, 49);
         }
 
-        // Monster images
         String[] monsterImages = {
             "James_Sullivan", "Mike_Wazowski", "Randall_Boggs",
             "Celia_Mae", "Roz", "Fungus", "Henry_Waternoose", "Yeti"
@@ -47,7 +43,6 @@ public final class ResourceLoader {
             fetchAndCache(name, 49, 49);
         }
 
-        // Card images
         String[] cardImages = {
             "Position_Swap", "Contamination_Code", "2319_Alert",
             "Small_Snatcher", "Sneaky_Thief", "Mega_Drain",
@@ -57,7 +52,6 @@ public final class ResourceLoader {
             fetchAndCache(name, 62, 62);
         }
 
-        // UI images
         fetchAndCache("shield",    34, 34);
         fetchAndCache("freeze",    34, 34);
         fetchAndCache("energy",    52, 52);
@@ -65,10 +59,8 @@ public final class ResourceLoader {
     }
 
     private static void warmFont(String path, double size) {
-        font(path, size);   // just to trigger the load+register
+        font(path, size); 
     }
-
-    // ── Font ─────────────────────────────────────────────────────────────────
 
     public static Font font(String path, double size) {
         String key = path + "@" + size;
@@ -92,8 +84,6 @@ public final class ResourceLoader {
         }
         return Font.font("System", size);
     }
-
-    // ── Image ────────────────────────────────────────────────────────────────
 
     public static Image loadImage(String name, double w, double h) {
         String key = name + "@" + (int) w + "x" + (int) h;

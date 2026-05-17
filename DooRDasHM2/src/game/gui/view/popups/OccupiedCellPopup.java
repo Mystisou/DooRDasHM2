@@ -19,11 +19,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-/**
- * Shown when the player's dice roll would land them on an occupied cell.
- * The "Roll Again" button closes the popup and immediately retries the roll
- * via the provided Runnable — no extra click needed.
- */
 public final class OccupiedCellPopup {
 
     private static final String F_BANGERS = "resources/fonts/Bangers-Regular.ttf";
@@ -33,11 +28,7 @@ public final class OccupiedCellPopup {
     private static final String RED_BTN   = "#c0392b";
     private static final String RED_HOVER = "#e74c3c";
 
-    /**
-     * @param occupierName  name of the monster currently standing on the cell
-     * @param owner         parent window (for modal attachment)
-     * @param onRollAgain   called after the popup closes — triggers a fresh dice roll
-     */
+    
     public static void show(String occupierName, Window owner, Runnable onRollAgain) {
         Stage popup = new Stage();
         popup.initStyle(StageStyle.TRANSPARENT);
@@ -45,7 +36,7 @@ public final class OccupiedCellPopup {
         if (owner != null) popup.initOwner(owner);
         popup.setResizable(false);
 
-        // Background image (same as the "choose a side" popup)
+        
         ImageView bg = new ImageView();
         Image bgImg  = ResourceLoader.loadImage("start_popup", 460, 290);
         if (bgImg != null) {
@@ -81,9 +72,9 @@ public final class OccupiedCellPopup {
         rollBtn.setOnMouseExited(e  -> applyBtnStyle(rollBtn, RED_BTN));
         rollBtn.setOnAction(e -> {
             popup.close();
-            // Platform.runLater ensures handleRoll() runs after showAndWait() has
-            // fully unwound — without this, a second InvalidMoveException would try
-            // to open another showAndWait() inside the first one, which JavaFX blocks.
+            
+            
+            
             if (onRollAgain != null) javafx.application.Platform.runLater(onRollAgain);
         });
 
